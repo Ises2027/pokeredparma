@@ -1,7 +1,6 @@
 ApplyOutOfBattlePoisonDamage:
-	ld a, [wStatusFlags5]
-	assert BIT_SCRIPTED_MOVEMENT_STATE == 7
-	add a ; overflows scripted movement state bit into carry flag
+	ld a, [wd730]
+	add a
 	jp c, .noBlackOut ; no black out if joypad states are being simulated
 	ld a, [wPartyCount]
 	and a
@@ -9,13 +8,13 @@ ApplyOutOfBattlePoisonDamage:
 	call IncrementDayCareMonExp
 	ld a, [wStepCounter]
 	and $3 ; is the counter a multiple of 4?
-	jp nz, .noBlackOut ; only apply poison damage every fourth step
+	jp nz, .skipPoisonEffectAndSound ; only apply poison damage every fourth step
 	ld [wWhichPokemon], a
 	ld hl, wPartyMon1Status
 	ld de, wPartySpecies
 .applyDamageLoop
 	ld a, [hl]
-	and 1 << PSN
+	and (1 << PSN)
 	jr z, .nextMon2 ; not poisoned
 	dec hl
 	dec hl
@@ -44,7 +43,7 @@ ApplyOutOfBattlePoisonDamage:
 	inc hl
 	ld [hl], a
 	ld a, [de]
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	push de
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMonNicks
@@ -53,7 +52,7 @@ ApplyOutOfBattlePoisonDamage:
 	ld [wJoyIgnore], a
 	call EnableAutoTextBoxDrawing
 	ld a, TEXT_MON_FAINTED
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
 	pop de
 	pop hl
@@ -79,7 +78,7 @@ ApplyOutOfBattlePoisonDamage:
 	ld e, 0
 .countPoisonedLoop
 	ld a, [hl]
-	and 1 << PSN
+	and (1 << PSN)
 	or e
 	ld e, a
 	ld bc, wPartyMon2 - wPartyMon1
@@ -90,7 +89,7 @@ ApplyOutOfBattlePoisonDamage:
 	and a ; are any party members poisoned?
 	jr z, .skipPoisonEffectAndSound
 	ld b, $2
-	predef ChangeBGPalColor0_4Frames ; change BG white to dark gray for 4 frames
+	predef ChangeBGPalColor0_4Frames ; change BG white to dark grey for 4 frames
 	ld a, SFX_POISONED
 	call PlaySound
 .skipPoisonEffectAndSound
@@ -100,10 +99,10 @@ ApplyOutOfBattlePoisonDamage:
 	jr nz, .noBlackOut
 	call EnableAutoTextBoxDrawing
 	ld a, TEXT_BLACKED_OUT
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call DisplayTextID
-	ld hl, wStatusFlags4
-	set BIT_BATTLE_OVER_OR_BLACKOUT, [hl]
+	ld hl, wd72e
+	set 5, [hl]
 	ld a, $ff
 	jr .done
 .noBlackOut

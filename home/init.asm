@@ -8,6 +8,7 @@ SoftReset::
 Init::
 ;  Program init.
 
+DEF rLCDC_DEFAULT EQU %11100011
 ; * LCD enabled
 ; * Window tile map at $9C00
 ; * Window display enabled
@@ -16,7 +17,6 @@ Init::
 ; * 8x8 OBJ size
 ; * OBJ display enabled
 ; * BG display enabled
-DEF rLCDC_DEFAULT EQU (1 << rLCDC_ENABLE) | (1 << rLCDC_WINDOW_TILEMAP) | (1 << rLCDC_WINDOW_ENABLE) | (1 << rLCDC_SPRITES_ENABLE) | (1 << rLCDC_BG_PRIORITY)
 
 	di
 
@@ -35,7 +35,7 @@ DEF rLCDC_DEFAULT EQU (1 << rLCDC_ENABLE) | (1 << rLCDC_WINDOW_TILEMAP) | (1 << 
 	ldh [rOBP0], a
 	ldh [rOBP1], a
 
-	ld a, 1 << rLCDC_ENABLE
+	ld a, rLCDC_ENABLE_MASK
 	ldh [rLCDC], a
 	call DisableLCD
 

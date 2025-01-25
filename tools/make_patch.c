@@ -1,5 +1,5 @@
 #define PROGRAM_NAME "make_patch"
-#define USAGE_OPTS "values.sym patched.gbc original.gbc vc.patch.template vc.patch"
+#define USAGE_OPTS "labels.sym constants.sym patched.gbc original.gbc vc.patch.template vc.patch"
 
 #include "common.h"
 
@@ -103,24 +103,21 @@ int parse_number(const char *input, int base) {
 
 void parse_symbol_value(char *input, int *restrict bank, int *restrict address) {
 	char *colon = strchr(input, ':');
-	if (colon) {
-		*colon++ = '\0';
-		*bank = parse_number(input, 16);
-		*address = parse_number(colon, 16);
-	} else {
-		*bank = 0;
-		*address = parse_number(input, 16);
+	if (!colon) {
+		error_exit("Error: Cannot parse bank+address: \"%s\"\n", input);
 	}
+	*colon++ = '\0';
+	*bank = parse_number(input, 16);
+	*address = parse_number(colon, 16);
 }
 
-struct Symbol *parse_symbols(const char *filename) {
+void parse_symbols(const char *filename, struct Symbol **symbols) {
 	FILE *file = xfopen(filename, 'r');
 	struct Buffer *buffer = buffer_create(1);
 
 	enum { SYM_PRE, SYM_VALUE, SYM_SPACE, SYM_NAME } state = SYM_PRE;
 	int bank = 0;
 	int address = 0;
-	struct Symbol *symbols = NULL;
 
 	for (;;) {
 		int c = getc(file);
@@ -128,7 +125,7 @@ struct Symbol *parse_symbols(const char *filename) {
 			if (state == SYM_NAME) {
 				// The symbol name has ended; append the buffered symbol
 				buffer_append(buffer, &(char []){'\0'});
-				symbol_append(&symbols, buffer->data, bank, address);
+				symbol_append(symbols, buffer->data, bank, address);
 			}
 			// Skip to the next line, ignoring anything after the symbol value and name
 			state = SYM_PRE;
@@ -157,7 +154,6 @@ struct Symbol *parse_symbols(const char *filename) {
 
 	fclose(file);
 	buffer_free(buffer);
-	return symbols;
 }
 
 int strfind(const char *s, const char *list[], int count) {
@@ -445,18 +441,20 @@ bool verify_completeness(FILE *restrict orig_rom, FILE *restrict new_rom, struct
 }
 
 int main(int argc, char *argv[]) {
-	if (argc != 6) {
+	if (argc != 7) {
 		usage_exit(1);
 	}
 
-	struct Symbol *symbols = parse_symbols(argv[1]);
+	struct Symbol *symbols = NULL;
+	parse_symbols(argv[1], &symbols);
+	parse_symbols(argv[2], &symbols);
 
-	FILE *new_rom = xfopen(argv[2], 'r');
-	FILE *orig_rom = xfopen(argv[3], 'r');
-	struct Buffer *patches = process_template(argv[4], argv[5], new_rom, orig_rom, symbols);
+	FILE *new_rom = xfopen(argv[3], 'r');
+	FILE *orig_rom = xfopen(argv[4], 'r');
+	struct Buffer *patches = process_template(argv[5], argv[6], new_rom, orig_rom, symbols);
 
 	if (!verify_completeness(orig_rom, new_rom, patches)) {
-		fprintf(stderr, PROGRAM_NAME ": Warning: Not all ROM differences are defined by \"%s\"\n", argv[5]);
+		fprintf(stderr, PROGRAM_NAME ": Warning: Not all ROM differences are defined by \"%s\"\n", argv[6]);
 	}
 
 	symbol_free(symbols);

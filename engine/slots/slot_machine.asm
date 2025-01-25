@@ -1,9 +1,8 @@
 PromptUserToPlaySlots:
 	call SaveScreenTilesToBuffer2
-	ld a, BANK(DisplayTextIDInit)
-	assert BANK(DisplayTextIDInit) == 1 << BIT_NO_AUTO_TEXT_BOX
-	ld [wAutoTextBoxDrawingControl], a ; 1 << BIT_NO_AUTO_TEXT_BOX
-	ld b, a ; BANK(DisplayTextIDInit)
+	ld a, BANK(DisplayTextIDInit) ; TRUE
+	ld [wAutoTextBoxDrawingControl], a
+	ld b, a
 	ld hl, DisplayTextIDInit
 	call Bankswitch
 	ld hl, PlaySlotMachineText
@@ -27,16 +26,16 @@ PromptUserToPlaySlots:
 	call GBPalNormal
 	ld a, $e4
 	ldh [rOBP0], a
-	ld hl, wStatusFlags5
-	set BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	set 6, [hl]
 	xor a
 	ld [wSlotMachineAllowMatchesCounter], a
 	ld hl, wStoppingWhichSlotMachineWheel
 	ld bc, $14
 	call FillMemory
 	call MainSlotMachineLoop
-	ld hl, wStatusFlags5
-	res BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	res 6, [hl]
 	xor a
 	ld [wSlotMachineAllowMatchesCounter], a
 	call GBPalWhiteOutWithDelay3
@@ -174,7 +173,7 @@ OneMoreGoSlotMachineText:
 
 SlotMachine_SetFlags:
 	ld hl, wSlotMachineFlags
-	bit BIT_SLOTS_CAN_WIN_WITH_7_OR_BAR, [hl]
+	bit 7, [hl]
 	ret nz
 	ld a, [wSlotMachineAllowMatchesCounter]
 	and a
@@ -192,14 +191,14 @@ SlotMachine_SetFlags:
 	ld [hl], 0
 	ret
 .allowMatches
-	set BIT_SLOTS_CAN_WIN, [hl]
+	set 6, [hl]
 	ret
 .setAllowMatchesCounter
 	ld a, 60
 	ld [wSlotMachineAllowMatchesCounter], a
 	ret
 .allowSevenAndBarMatches
-	set BIT_SLOTS_CAN_WIN_WITH_7_OR_BAR, [hl]
+	set 7, [hl]
 	ret
 
 SlotMachine_SpinWheels:
@@ -290,7 +289,7 @@ SlotMachine_StopWheel1Early:
 	call SlotMachine_GetWheel1Tiles
 	ld hl, wSlotMachineWheel1BottomTile
 	ld a, [wSlotMachineFlags]
-	and 1 << BIT_SLOTS_CAN_WIN_WITH_7_OR_BAR
+	and $80
 	jr nz, .sevenAndBarMode
 ; Stop early if the middle symbol is not a cherry.
 	inc hl
@@ -305,7 +304,7 @@ SlotMachine_StopWheel1Early:
 .loop
 	ld a, [hli]
 	cp HIGH(SLOTS7)
-	jr c, .stopWheel ; condition never true
+	jr z, .stopWheel
 	dec c
 	jr nz, .loop
 	ret
@@ -318,7 +317,7 @@ SlotMachine_StopWheel1Early:
 SlotMachine_StopWheel2Early:
 	call SlotMachine_GetWheel2Tiles
 	ld a, [wSlotMachineFlags]
-	and 1 << BIT_SLOTS_CAN_WIN_WITH_7_OR_BAR
+	and $80
 	jr nz, .sevenAndBarMode
 ; Stop early if any symbols are lined up in the first two wheels.
 	call SlotMachine_FindWheel1Wheel2Matches
@@ -330,9 +329,13 @@ SlotMachine_StopWheel2Early:
 ; player's odds.
 .sevenAndBarMode
 	call SlotMachine_FindWheel1Wheel2Matches
+	ret nz
 	ld a, [de]
 	cp HIGH(SLOTSBAR) + 1
-	ret nc
+	jr c, .stopWheel
+	ld a, [wSlotMachineFlags]
+	bit 6, a
+	ret z
 .stopWheel
 	xor a
 	ld [wSlotMachineWheel2SlipCounter], a
@@ -402,7 +405,7 @@ SlotMachine_CheckForMatches:
 	call SlotMachine_CheckForMatch
 	jr z, .foundMatch
 	ld a, [wSlotMachineFlags]
-	and (1 << BIT_SLOTS_CAN_WIN) | (1 << BIT_SLOTS_CAN_WIN_WITH_7_OR_BAR)
+	and $c0
 	jr z, .noMatch
 	ld hl, wSlotMachineRerollCounter
 	dec [hl]
@@ -422,9 +425,9 @@ SlotMachine_CheckForMatches:
 	jp SlotMachine_CheckForMatches
 .foundMatch
 	ld a, [wSlotMachineFlags]
-	and (1 << BIT_SLOTS_CAN_WIN) | (1 << BIT_SLOTS_CAN_WIN_WITH_7_OR_BAR)
+	and $c0
 	jr z, .rollWheel3DownByOneSymbol ; roll wheel if player isn't allowed to win
-	and 1 << BIT_SLOTS_CAN_WIN_WITH_7_OR_BAR
+	and $80
 	jr nz, .acceptMatch
 ; if 7/bar matches aren't enabled and the match was a 7/bar symbol, roll wheel
 	ld a, [hl]
@@ -600,7 +603,7 @@ SlotReward300Func:
 	call PlaySound
 	call Random
 	cp $80
-	ld a, 0
+	ld a, $0
 	jr c, .skip
 	ld [wSlotMachineFlags], a
 .skip
@@ -655,7 +658,7 @@ SlotMachine_PrintPayoutCoins:
 	jp PrintNumber
 
 SlotMachine_PayCoinsToPlayer:
-	ld a, TRUE
+	ld a, $1
 	ld [wMuteAudioAndPauseMusic], a
 	call WaitForSoundToFinish
 

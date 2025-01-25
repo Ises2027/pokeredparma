@@ -32,7 +32,7 @@ PrintBeginningBattleText:
 	ld b, SILPH_SCOPE
 	call IsItemInBag
 	ld a, [wEnemyMonSpecies2]
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	cp RESTLESS_SOUL
 	jr z, .isMarowak
 	ld a, b
@@ -184,6 +184,7 @@ PlayerMon2Text:
 	ld b, [hl]
 	ld a, [de]
 	sbc b
+	jr c, .gainedHP; if we underflow, print default text
 	ldh [hMultiplicand + 1], a
 	ld a, 25
 	ldh [hMultiplier], a
@@ -217,6 +218,11 @@ PlayerMon2Text:
 	cp 70
 	ret c
 	ld hl, GoodText ; HP went down 70% or more
+	ret
+.gainedHP
+	pop bc
+	pop de
+	ld hl, EnoughText
 	ret
 
 EnoughText:

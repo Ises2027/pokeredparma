@@ -10,11 +10,15 @@ ClearVariablesOnEnterMap::
 	ldh [hJoyReleased], a
 	ldh [hJoyHeld], a
 	ld [wActionResultOrTookBattleTurn], a
-	ld [wUnusedMapVariable], a
+	ld [wUnusedD5A3], a
 	ld hl, wCardKeyDoorY
 	ld [hli], a
 	ld [hl], a
 	ld hl, wWhichTrade
 	ld bc, wStandingOnWarpPadOrHole - wWhichTrade
 	call FillMemory
+	ld hl, wd730
+	set 3, [hl]
+	ld hl, wFlags_0xcd60
+	res 0, [hl]
 	ret

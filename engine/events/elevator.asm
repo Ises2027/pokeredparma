@@ -20,7 +20,7 @@ DisplayElevatorFloorMenu:
 	ld [wListScrollOffset], a
 	ret c
 	ld hl, wCurrentMapScriptFlags
-	set BIT_CUR_MAP_USED_ELEVATOR, [hl]
+	set 7, [hl]
 	ld hl, wElevatorWarpMaps
 	ld a, [wWhichPokemon]
 	add a

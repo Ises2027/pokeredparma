@@ -9,7 +9,7 @@ ShowPokedexMenu:
 	ld [wListScrollOffset], a
 	ld [wLastMenuItem], a
 	inc a
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	ldh [hJoy7], a
 .setUpGraphics
 	ld b, SET_PAL_GENERIC
@@ -36,7 +36,7 @@ ShowPokedexMenu:
 	ld [wCurrentMenuItem], a
 	ld [wLastMenuItem], a
 	ldh [hJoy7], a
-	ld [wUnusedOverrideSimulatedJoypadStatesIndex], a
+	ld [wUnusedCD3A], a
 	ld [wOverrideSimulatedJoypadStatesMask], a
 	pop af
 	ld [wListScrollOffset], a
@@ -68,8 +68,8 @@ HandlePokedexSideMenu:
 	push af
 	add b
 	inc a
-	ld [wPokedexNum], a
-	ld a, [wPokedexNum]
+	ld [wd11e], a
+	ld a, [wd11e]
 	push af
 	ld a, [wDexMaxSeenMon]
 	push af ; this doesn't need to be preserved
@@ -111,7 +111,7 @@ HandlePokedexSideMenu:
 	pop af
 	ld [wDexMaxSeenMon], a
 	pop af
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	pop af
 	ld [wListScrollOffset], a
 	pop af
@@ -142,7 +142,7 @@ HandlePokedexSideMenu:
 
 ; play pokemon cry
 .choseCry
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	call GetCryData
 	call PlaySound
 	jr .handleMenuInput
@@ -222,7 +222,7 @@ HandlePokedexListMenu:
 	call ClearScreenArea
 	hlcoord 1, 3
 	ld a, [wListScrollOffset]
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	ld d, 7
 	ld a, [wDexMaxSeenMon]
 	cp 7
@@ -233,17 +233,17 @@ HandlePokedexListMenu:
 ; loop to print pokemon pokedex numbers and names
 ; if the player has owned the pokemon, it puts a pokeball beside the name
 .printPokemonLoop
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	inc a
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	push af
 	push de
 	push hl
 	ld de, -SCREEN_WIDTH
 	add hl, de
-	ld de, wPokedexNum
+	ld de, wd11e
 	lb bc, LEADING_ZEROES | 1, 3
-	call PrintNumber
+	call PrintNumber ; print the pokedex number
 	ld de, SCREEN_WIDTH
 	add hl, de
 	dec hl
@@ -276,7 +276,7 @@ HandlePokedexListMenu:
 	add hl, bc
 	pop de
 	pop af
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	dec d
 	jr nz, .printPokemonLoop
 	ld a, 01
@@ -376,10 +376,10 @@ PokedexMenuItemsText:
 
 ; tests if a pokemon's bit is set in the seen or owned pokemon bit fields
 ; INPUT:
-; [wPokedexNum] = pokedex number
+; [wd11e] = pokedex number
 ; hl = address of bit field
 IsPokemonBitSet:
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	dec a
 	ld c, a
 	ld b, FLAG_TEST
@@ -397,19 +397,19 @@ ShowPokedexData:
 
 ; function to display pokedex data from inside the pokedex
 ShowPokedexDataInternal:
-	ld hl, wStatusFlags2
-	set BIT_NO_AUDIO_FADE_OUT, [hl]
+	ld hl, wd72c
+	set 1, [hl]
 	ld a, $33 ; 3/7 volume
 	ldh [rNR50], a
 	call GBPalWhiteOut ; zero all palettes
 	call ClearScreen
-	ld a, [wPokedexNum]
-	ld [wCurPartySpecies], a
+	ld a, [wd11e] ; pokemon ID
+	ld [wcf91], a
 	push af
 	ld b, SET_PAL_POKEDEX
 	call RunPaletteCommand
 	pop af
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	ldh a, [hTileAnimations]
 	push af
 	xor a
@@ -455,7 +455,7 @@ ShowPokedexDataInternal:
 	call PlaceString
 
 	ld hl, PokedexEntryPointers
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	dec a
 	ld e, a
 	ld d, 0
@@ -471,7 +471,7 @@ ShowPokedexDataInternal:
 	ld h, b
 	ld l, c
 	push de
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	push af
 	call IndexToPokedex
 
@@ -480,16 +480,16 @@ ShowPokedexDataInternal:
 	ld [hli], a
 	ld a, "<DOT>"
 	ld [hli], a
-	ld de, wPokedexNum
+	ld de, wd11e
 	lb bc, LEADING_ZEROES | 1, 3
 	call PrintNumber ; print pokedex number
 
 	ld hl, wPokedexOwned
 	call IsPokemonBitSet
 	pop af
-	ld [wPokedexNum], a
-	ld a, [wCurPartySpecies]
-	ld [wCurSpecies], a
+	ld [wd11e], a
+	ld a, [wcf91]
+	ld [wd0b5], a
 	pop de
 
 	push af
@@ -502,8 +502,8 @@ ShowPokedexDataInternal:
 	call GetMonHeader ; load pokemon picture location
 	hlcoord 1, 1
 	call LoadFlippedFrontSpriteByMonIndex ; draw pokemon picture
-	ld a, [wCurPartySpecies]
-	call PlayCry
+	ld a, [wcf91]
+	call PlayCry ; play pokemon cry
 
 	pop hl
 	pop de
@@ -583,8 +583,8 @@ ShowPokedexDataInternal:
 	call RunDefaultPaletteCommand
 	call LoadTextBoxTilePatterns
 	call GBPalNormal
-	ld hl, wStatusFlags2
-	res BIT_NO_AUDIO_FADE_OUT, [hl]
+	ld hl, wd72c
+	res 1, [hl]
 	ld a, $77 ; max volume
 	ldh [rNR50], a
 	ret
@@ -624,10 +624,10 @@ DrawTileLine:
 INCLUDE "data/pokemon/dex_entries.asm"
 
 PokedexToIndex:
-	; converts the Pokédex number at [wPokedexNum] to an index
+	; converts the Pokédex number at wd11e to an index
 	push bc
 	push hl
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	ld b, a
 	ld c, 0
 	ld hl, PokedexOrder
@@ -639,23 +639,23 @@ PokedexToIndex:
 	jr nz, .loop
 
 	ld a, c
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	pop hl
 	pop bc
 	ret
 
 IndexToPokedex:
-	; converts the index number at [wPokedexNum] to a Pokédex number
+	; converts the index number at wd11e to a Pokédex number
 	push bc
 	push hl
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	dec a
 	ld hl, PokedexOrder
 	ld b, 0
 	ld c, a
 	add hl, bc
 	ld a, [hl]
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	pop hl
 	pop bc
 	ret

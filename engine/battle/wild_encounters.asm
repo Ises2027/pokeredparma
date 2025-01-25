@@ -4,8 +4,8 @@ TryDoWildEncounter:
 	ld a, [wNPCMovementScriptPointerTableNum]
 	and a
 	ret nz
-	ld a, [wMovementFlags]
-	and a ; is player exiting a door, jumping over a ledge, or fishing?
+	ld a, [wd736]
+	and a
 	ret nz
 	callfar IsPlayerStandingOnDoorTileOrWarpTile
 	jr nc, .notStandingOnDoorOrWarpTile
@@ -27,8 +27,7 @@ TryDoWildEncounter:
 ; is the bottom right tile (9,9) of the half-block we're standing in a grass/water tile?
 	hlcoord 9, 9
 	ld c, [hl]
-	ld a, [wGrassTile]
-	cp c
+	call TestGrassTile
 	ld a, [wGrassRate]
 	jr z, .CanEncounter
 	ld a, $14 ; in all tilesets with a water tile, this is its id
@@ -74,23 +73,23 @@ TryDoWildEncounter:
 	ld b, 0
 	add hl, bc
 	ld a, [hli]
-	ld [wCurEnemyLevel], a
+	ld [wCurEnemyLVL], a
 	ld a, [hl]
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	ld [wEnemyMonSpecies2], a
 	ld a, [wRepelRemainingSteps]
 	and a
 	jr z, .willEncounter
 	ld a, [wPartyMon1Level]
 	ld b, a
-	ld a, [wCurEnemyLevel]
+	ld a, [wCurEnemyLVL]
 	cp b
 	jr c, .CantEncounter2 ; repel prevents encounters if the leading party mon's level is higher than the wild mon
 	jr .willEncounter
 .lastRepelStep
 	ld [wRepelRemainingSteps], a
 	ld a, TEXT_REPEL_WORE_OFF
-	ldh [hTextID], a
+	ldh [hSpriteIndexOrTextID], a
 	call EnableAutoTextBoxDrawing
 	call DisplayTextID
 .CantEncounter2
@@ -99,6 +98,18 @@ TryDoWildEncounter:
 	ret
 .willEncounter
 	xor a
+	ret
+
+TestGrassTile:
+	ld a, [wGrassTile]
+	cp c
+	jr z, .return
+	ld a, [wCurMapTileset]
+	cp FOREST
+	jr nz, .return
+	ld a, $34	; check for the extra grass tile in the forest tileset
+	cp c
+.return
 	ret
 
 INCLUDE "data/wild/probabilities.asm"

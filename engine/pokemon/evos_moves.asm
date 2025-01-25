@@ -20,6 +20,8 @@ EvolutionAfterBattle:
 	push hl
 	push bc
 	push de
+	ld hl, wStartBattleLevels
+	push hl
 	ld hl, wPartyCount
 	push hl
 
@@ -27,11 +29,16 @@ Evolution_PartyMonLoop: ; loop over party mons
 	ld hl, wWhichPokemon
 	inc [hl]
 	pop hl
+	pop de
+	ld a, [de]
+	ld [wTempCoins1], a
+	inc de
 	inc hl
 	ld a, [hl]
 	cp $ff ; have we reached the end of the party?
 	jp z, .done
 	ld [wEvoOldSpecies], a
+	push de
 	push hl
 	ld a, [wWhichPokemon]
 	ld c, a
@@ -53,13 +60,13 @@ Evolution_PartyMonLoop: ; loop over party mons
 	ld h, [hl]
 	ld l, a
 	push hl
-	ld a, [wCurPartySpecies]
+	ld a, [wcf91]
 	push af
 	xor a ; PLAYER_PARTY_DATA
 	ld [wMonDataLocation], a
 	call LoadMonData
 	pop af
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	pop hl
 
 .evoEntryLoop ; loop over evolution entries
@@ -93,9 +100,12 @@ Evolution_PartyMonLoop: ; loop over party mons
 	jp c, Evolution_PartyMonLoop ; if so, go the next mon
 	jr .doEvolution
 .checkItemEvo
+	ld a, [wIsInBattle] ; are we in battle?
+	and a
 	ld a, [hli]
+	jp nz, .nextEvoEntry1 ; don't evolve if in battle
 	ld b, a ; evolution item
-	ld a, [wCurItem]
+	ld a, [wcf91] ; last item used 
 	cp b ; was the evolution item in this entry used?
 	jp nz, .nextEvoEntry1 ; if not, go to the next evolution entry
 .checkLevel
@@ -105,7 +115,7 @@ Evolution_PartyMonLoop: ; loop over party mons
 	cp b ; is the mon's level greater than the evolution requirement?
 	jp c, .nextEvoEntry2 ; if so, go the next evolution entry
 .doEvolution
-	ld [wCurEnemyLevel], a
+	ld [wCurEnemyLVL], a
 	ld a, 1
 	ld [wEvolutionOccurred], a
 	push hl
@@ -135,7 +145,7 @@ Evolution_PartyMonLoop: ; loop over party mons
 	call PrintText
 	pop hl
 	ld a, [hl]
-	ld [wCurSpecies], a
+	ld [wd0b5], a
 	ld [wLoadedMonSpecies], a
 	ld [wEvoNewSpecies], a
 	ld a, MONSTER_NAME
@@ -153,22 +163,22 @@ Evolution_PartyMonLoop: ; loop over party mons
 	call DelayFrames
 	call ClearScreen
 	call RenameEvolvedMon
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	push af
-	ld a, [wCurSpecies]
-	ld [wPokedexNum], a
+	ld a, [wd0b5]
+	ld [wd11e], a
 	predef IndexToPokedex
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	dec a
 	ld hl, BaseStats
 	ld bc, BASE_DATA_SIZE
 	call AddNTimes
 	ld de, wMonHeader
 	call CopyData
-	ld a, [wCurSpecies]
+	ld a, [wd0b5]
 	ld [wMonHIndex], a
 	pop af
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	ld hl, wLoadedMonHPExp - 1
 	ld de, wLoadedMonStats
 	ld b, $1
@@ -203,8 +213,8 @@ Evolution_PartyMonLoop: ; loop over party mons
 	dec hl
 	pop bc
 	call CopyData
-	ld a, [wCurSpecies]
-	ld [wPokedexNum], a
+	ld a, [wd0b5]
+	ld [wd11e], a
 	xor a
 	ld [wMonDataLocation], a
 	call LearnMoveFromLevelUp
@@ -214,7 +224,7 @@ Evolution_PartyMonLoop: ; loop over party mons
 	and a
 	call z, Evolution_ReloadTilesetTilePatterns
 	predef IndexToPokedex
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	dec a
 	ld c, a
 	ld b, FLAG_SET
@@ -260,15 +270,14 @@ Evolution_PartyMonLoop: ; loop over party mons
 RenameEvolvedMon:
 ; Renames the mon to its new, evolved form's standard name unless it had a
 ; nickname, in which case the nickname is kept.
-	assert wCurSpecies == wNameListIndex ; save+restore wCurSpecies while using wNameListIndex
-	ld a, [wCurSpecies]
+	ld a, [wd0b5]
 	push af
 	ld a, [wMonHIndex]
-	ld [wNameListIndex], a
+	ld [wd0b5], a
 	call GetName
 	pop af
-	ld [wCurSpecies], a
-	ld hl, wNameBuffer
+	ld [wd0b5], a
+	ld hl, wcd6d
 	ld de, wStringBuffer
 .compareNamesLoop
 	ld a, [de]
@@ -284,7 +293,7 @@ RenameEvolvedMon:
 	call AddNTimes
 	push hl
 	call GetName
-	ld hl, wNameBuffer
+	ld hl, wcd6d
 	pop de
 	jp CopyData
 
@@ -320,8 +329,8 @@ Evolution_ReloadTilesetTilePatterns:
 
 LearnMoveFromLevelUp:
 	ld hl, EvosMovesPointerTable
-	ld a, [wPokedexNum] ; species
-	ld [wCurPartySpecies], a
+	ld a, [wd11e] ; species
+	ld [wcf91], a
 	dec a
 	ld bc, 0
 	ld hl, EvosMovesPointerTable
@@ -341,7 +350,7 @@ LearnMoveFromLevelUp:
 	and a ; have we reached the end of the learn set?
 	jr z, .done ; if we've reached the end of the learn set, jump
 	ld b, a ; level the move is learnt at
-	ld a, [wCurEnemyLevel]
+	ld a, [wCurEnemyLVL]
 	cp b ; is the move learnt at the mon's current level?
 	ld a, [hli] ; move ID
 	jr nz, .learnSetLoop
@@ -367,16 +376,16 @@ LearnMoveFromLevelUp:
 	jr nz, .checkCurrentMovesLoop
 	ld a, d
 	ld [wMoveNum], a
-	ld [wNamedObjectIndex], a
+	ld [wd11e], a
 	call GetMoveName
 	call CopyToStringBuffer
 	predef LearnMove
 .done
-	ld a, [wCurPartySpecies]
-	ld [wPokedexNum], a
+	ld a, [wcf91]
+	ld [wd11e], a
 	ret
 
-; writes the moves a mon has at level [wCurEnemyLevel] to [de]
+; writes the moves a mon has at level [wCurEnemyLVL] to [de]
 ; move slots are being filled up sequentially and shifted if all slots are full
 WriteMonMoves:
 	call GetPredefRegisters
@@ -385,7 +394,7 @@ WriteMonMoves:
 	push bc
 	ld hl, EvosMovesPointerTable
 	ld b, 0
-	ld a, [wCurPartySpecies]
+	ld a, [wcf91]  ; cur mon ID
 	dec a
 	add a
 	rl b
@@ -408,7 +417,7 @@ WriteMonMoves:
 	and a
 	jp z, .done       ; end of list
 	ld b, a
-	ld a, [wCurEnemyLevel]
+	ld a, [wCurEnemyLVL]
 	cp b
 	jp c, .done       ; mon level < move level (assumption: learnset is sorted by level)
 	ld a, [wLearningMovesFromDayCare]

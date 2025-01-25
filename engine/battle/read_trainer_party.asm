@@ -49,12 +49,12 @@ ReadTrainer:
 	ld a, [hli]
 	cp $FF ; is the trainer special?
 	jr z, .SpecialTrainer ; if so, check for special moves
-	ld [wCurEnemyLevel], a
+	ld [wCurEnemyLVL], a
 .LoopTrainerData
 	ld a, [hli]
 	and a ; have we reached the end of the trainer data?
 	jr z, .FinishUp
-	ld [wCurPartySpecies], a
+	ld [wcf91], a ; write species somewhere (XXX why?)
 	ld a, ENEMY_PARTY_DATA
 	ld [wMonDataLocation], a
 	push hl
@@ -69,9 +69,9 @@ ReadTrainer:
 	ld a, [hli]
 	and a ; have we reached the end of the trainer data?
 	jr z, .AddLoneMove
-	ld [wCurEnemyLevel], a
+	ld [wCurEnemyLVL], a
 	ld a, [hli]
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	ld a, ENEMY_PARTY_DATA
 	ld [wMonDataLocation], a
 	push hl
@@ -150,7 +150,7 @@ ReadTrainer:
 	ld [de], a
 	inc de
 	ld [de], a
-	ld a, [wCurEnemyLevel]
+	ld a, [wCurEnemyLVL]
 	ld b, a
 .LastLoop
 ; update wAmountMoneyWon addresses (money to win) based on enemy's level
@@ -162,5 +162,5 @@ ReadTrainer:
 	inc de
 	inc de
 	dec b
-	jr nz, .LastLoop ; repeat wCurEnemyLevel times
+	jr nz, .LastLoop ; repeat wCurEnemyLVL times
 	ret

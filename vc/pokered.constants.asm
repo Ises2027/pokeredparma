@@ -1,66 +1,72 @@
 ; These are all the asm constants needed to make the red_vc patch.
 
+MACRO vc_const
+	DEF x = \1
+	PRINTLN "00:{04x:x} \1" ; same format as rgblink's .sym file
+ENDM
+
 ; [FPA 001 Begin]
-EXPORT DEF M_CHAR EQU "M"
-EXPORT DEF E_CHAR EQU "E"
-EXPORT DEF G_CHAR EQU "G"
-EXPORT DEF A_CHAR EQU "A"
-EXPORT DEF P_CHAR EQU "P"
-EXPORT DEF S_CHAR EQU "S"
-EXPORT DEF L_CHAR EQU "L"
-EXPORT DEF F_CHAR EQU "F"
-EXPORT DEF D_CHAR EQU "D"
-EXPORT DEF X_CHAR EQU "X"
-EXPORT MEGA_PUNCH
+	vc_const "M"
+	vc_const "E"
+	vc_const "G"
+	vc_const "A"
+	vc_const "P"
+	vc_const "S"
+	vc_const "L"
+	vc_const "F"
+	vc_const "D"
+	vc_const "X"
+	vc_const MEGA_PUNCH
 
 ; [FPA 002 Begin]
-EXPORT DEF U_CHAR EQU "U"
-EXPORT DEF I_CHAR EQU "I"
-EXPORT GUILLOTINE
+	vc_const "U"
+	vc_const "I"
+	vc_const GUILLOTINE
 
 ; [FPA 003 Begin]
-EXPORT DEF K_CHAR EQU "K"
-EXPORT MEGA_KICK
+	vc_const "K"
+	vc_const MEGA_KICK
 
 ; [FPA 004 Begin]
-EXPORT DEF B_CHAR EQU "B"
-EXPORT BUBBLEBEAM
+	vc_const "B"
+	vc_const BUBBLEBEAM
 
 ; [FPA 005 Begin]
-EXPORT DEF H_CHAR EQU "H"
-EXPORT DEF Y_CHAR EQU "Y"
-EXPORT HYPER_BEAM
+	vc_const "H"
+	vc_const "Y"
+	vc_const HYPER_BEAM
 
 ; [FPA 006 Begin]
-EXPORT DEF T_CHAR EQU "T"
-EXPORT DEF N_CHAR EQU "N"
-EXPORT THUNDERBOLT
+	vc_const "T"
+	vc_const "N"
+	vc_const THUNDERBOLT
 
 ; [FPA 007 Begin]
-EXPORT DEF R_CHAR EQU "R"
-EXPORT REFLECT
+	vc_const "R"
+	vc_const "F"
+	vc_const REFLECT
 
 ; [FPA 008 Begin]
-EXPORT DREAM_EATER
+	vc_const DREAM_EATER
 
 ; [FPA 008 End]
-EXPORT DEF Z_CHAR EQU "Z"
-EXPORT BLIZZARD
+	vc_const "Z"
+	vc_const BLIZZARD
 
 ; [FPA 009 Begin]
-EXPORT DEF O_CHAR EQU "O"
-EXPORT SPORE
+	vc_const "O"
+	vc_const SPORE
 
 ; [FPA 010 Begin]
-EXPORT DEF C_CHAR EQU "C"
-EXPORT ROCK_SLIDE
+	vc_const "C"
+	vc_const ROCK_SLIDE
 
 ; [FPA 010 End]
-EXPORT SELFDESTRUCT
-EXPORT EXPLOSION
+	vc_const SELFDESTRUCT
+	vc_const EXPLOSION
 
 ; [FPA conf Begin]
-EXPORT CONFUSION
+	vc_const CONFUSION
 
 ; [FPA phy Begin]
-EXPORT PSYCHIC_M
+	vc_const PSYCHIC_M

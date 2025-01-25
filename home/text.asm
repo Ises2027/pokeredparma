@@ -63,7 +63,7 @@ PlaceNextChar::
 	jr nz, .NotNext
 	ld bc, 2 * SCREEN_WIDTH
 	ldh a, [hUILayoutFlags]
-	bit BIT_SINGLE_SPACED_LINES, a
+	bit 2, a
 	jr z, .ok
 	ld bc, SCREEN_WIDTH
 .ok
@@ -117,13 +117,13 @@ NullChar:: ; unused
 	pop hl
 	; A "<NULL>" character in a printed string
 	; displays an error message with the current value
-	; of hTextID in decimal format.
+	; of hSpriteIndexOrTextID in decimal format.
 	; This is a debugging leftover.
 	ld de, TextIDErrorText
 	dec de
 	ret
 
-TextIDErrorText:: ; "[hTextID] ERROR."
+TextIDErrorText:: ; "[hSpriteIndexOrTextID] ERROR."
 	text_far _TextIDErrorText
 	text_end
 
@@ -315,7 +315,7 @@ ProtectedDelay3::
 TextCommandProcessor::
 	ld a, [wLetterPrintingDelayFlags]
 	push af
-	set BIT_TEXT_DELAY, a
+	set 1, a
 	ld e, a
 	ldh a, [hClearLetterPrintingDelayFlags]
 	xor e
@@ -520,7 +520,7 @@ TextCommand_SOUND::
 	jr .loop
 
 .play
-	cp TX_SOUND_CRY_NIDORINA
+	cp TX_SOUND_CRY_NIDORINO
 	jr z, .pokemonCry
 	cp TX_SOUND_CRY_PIDGEOT
 	jr z, .pokemonCry
@@ -550,7 +550,7 @@ TextCommandSounds::
 	db TX_SOUND_GET_ITEM_2,           SFX_GET_ITEM_2
 	db TX_SOUND_GET_KEY_ITEM,         SFX_GET_KEY_ITEM
 	db TX_SOUND_DEX_PAGE_ADDED,       SFX_DEX_PAGE_ADDED
-	db TX_SOUND_CRY_NIDORINA,         NIDORINA ; used in OakSpeech
+	db TX_SOUND_CRY_NIDORINO,         NIDORINO ; used in OakSpeech
 	db TX_SOUND_CRY_PIDGEOT,          PIDGEOT  ; used in SaffronCityPidgeotText
 	db TX_SOUND_CRY_DEWGONG,          DEWGONG  ; unused
 

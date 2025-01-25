@@ -51,7 +51,7 @@ _OaksLabMonEnergeticText::
 _OaksLabReceivedMonText::
 	text "<PLAYER> received"
 	line "a @"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "!@"
 	text_end
 
@@ -137,7 +137,7 @@ _OaksLabGivePokeballsExplanationText::
 
 	para "Just throw a #"
 	line "BALL at it and try"
-	line "to catch it!"
+	cont "to catch it!"
 
 	para "This won't always"
 	line "work, though."
@@ -243,7 +243,7 @@ _OaksLabRivalIllTakeThisOneText::
 _OaksLabRivalReceivedMonText::
 	text "<RIVAL> received"
 	line "a @"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "!@"
 	text_end
 

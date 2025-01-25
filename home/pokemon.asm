@@ -77,7 +77,7 @@ DrawHPBar::
 ; 02: current box
 ; 03: daycare
 ; OUTPUT:
-; [wCurPartySpecies] = pokemon ID
+; [wcf91] = pokemon ID
 ; wLoadedMon = base address of pokemon data
 ; wMonHeader = base address of base stats
 LoadMonData::
@@ -99,12 +99,12 @@ LoadFlippedFrontSpriteByMonIndex::
 
 LoadFrontSpriteByMonIndex::
 	push hl
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	push af
-	ld a, [wCurPartySpecies]
-	ld [wPokedexNum], a
+	ld a, [wcf91]
+	ld [wd11e], a
 	predef IndexToPokedex
-	ld hl, wPokedexNum
+	ld hl, wd11e
 	ld a, [hl]
 	pop bc
 	ld [hl], b
@@ -115,7 +115,7 @@ LoadFrontSpriteByMonIndex::
 	jr c, .validDexNumber   ; dex >#151 invalid
 .invalidDexNumber
 	ld a, RHYDON ; $1
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	ret
 .validDexNumber
 	push hl
@@ -198,8 +198,8 @@ PartyMenuInit::
 	ld a, 1 ; hardcoded bank
 	call BankswitchHome
 	call LoadHpBarAndStatusTilePatterns
-	ld hl, wStatusFlags5
-	set BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	set 6, [hl] ; turn off letter printing delay
 	xor a ; PLAYER_PARTY_DATA
 	ld [wMonDataLocation], a
 	ld [wMenuWatchMovingOutOfBounds], a
@@ -245,14 +245,14 @@ HandlePartyMenuInput::
 	ld [wPartyMenuAnimMonEnabled], a
 	ld a, [wCurrentMenuItem]
 	ld [wPartyAndBillsPCSavedMenuItem], a
-	ld hl, wStatusFlags5
-	res BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	res 6, [hl] ; turn on letter printing delay
 	ld a, [wMenuItemToSwap]
 	and a
 	jp nz, .swappingPokemon
 	pop af
 	ldh [hTileAnimations], a
-	bit BIT_B_BUTTON, b
+	bit 1, b
 	jr nz, .noPokemonChosen
 	ld a, [wPartyCount]
 	and a
@@ -264,7 +264,7 @@ HandlePartyMenuInput::
 	ld c, a
 	add hl, bc
 	ld a, [hl]
-	ld [wCurPartySpecies], a
+	ld [wcf91], a
 	ld [wBattleMonSpecies2], a
 	call BankswitchBack
 	and a
@@ -355,8 +355,8 @@ PrintLevelFull::
 	ld a, [wLoadedMonLevel] ; level
 
 PrintLevelCommon::
-	ld [wTempByteValue], a
-	ld de, wTempByteValue
+	ld [wd11e], a
+	ld de, wd11e
 	ld b, LEFT_ALIGN | 1 ; 1 byte
 	jp PrintNumber
 
@@ -371,7 +371,7 @@ GetwMoves::
 
 ; copies the base stat data of a pokemon to wMonHeader
 ; INPUT:
-; [wCurSpecies] = pokemon ID
+; [wd0b5] = pokemon ID
 GetMonHeader::
 	ldh a, [hLoadedROMBank]
 	push af
@@ -381,10 +381,10 @@ GetMonHeader::
 	push bc
 	push de
 	push hl
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 	push af
-	ld a, [wCurSpecies]
-	ld [wPokedexNum], a
+	ld a, [wd0b5]
+	ld [wd11e], a
 	ld de, FossilKabutopsPic
 	ld b, $66 ; size of Kabutops fossil and Ghost sprites
 	cp FOSSIL_KABUTOPS ; Kabutops fossil
@@ -398,8 +398,8 @@ GetMonHeader::
 	jr z, .specialID
 	cp MEW
 	jr z, .mew
-	predef IndexToPokedex
-	ld a, [wPokedexNum]
+	predef IndexToPokedex   ; convert pokemon ID in [wd11e] to pokedex number
+	ld a, [wd11e]
 	dec a
 	ld bc, BASE_DATA_SIZE
 	ld hl, BaseStats
@@ -423,10 +423,10 @@ GetMonHeader::
 	ld a, BANK(MewBaseStats)
 	call FarCopyData
 .done
-	ld a, [wCurSpecies]
+	ld a, [wd0b5]
 	ld [wMonHIndex], a
 	pop af
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	pop hl
 	pop de
 	pop bc
@@ -435,7 +435,7 @@ GetMonHeader::
 	ld [MBC1RomBank], a
 	ret
 
-; copy party pokemon's name to wNameBuffer
+; copy party pokemon's name to wcd6d
 GetPartyMonName2::
 	ld a, [wWhichPokemon] ; index within party
 	ld hl, wPartyMonNicks
@@ -445,7 +445,7 @@ GetPartyMonName::
 	push hl
 	push bc
 	call SkipFixedLengthTextEntries ; add NAME_LENGTH to hl, a times
-	ld de, wNameBuffer
+	ld de, wcd6d
 	push de
 	ld bc, NAME_LENGTH
 	call CopyData

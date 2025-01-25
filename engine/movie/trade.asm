@@ -173,8 +173,8 @@ LoadTradingGFXAndMonNames:
 	call ClearSprites
 	ld a, $ff
 	ld [wUpdateSpritesEnabled], a
-	ld hl, wStatusFlags5
-	set BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	set 6, [hl] ; turn on instant text printing
 	ld a, [wOnSGB]
 	and a
 	ld a, $e4 ; non-SGB OBP0
@@ -186,14 +186,14 @@ LoadTradingGFXAndMonNames:
 	xor a
 	ldh [hAutoBGTransferEnabled], a
 	ld a, [wTradedPlayerMonSpecies]
-	ld [wNamedObjectIndex], a
+	ld [wd11e], a
 	call GetMonName
-	ld hl, wNameBuffer
+	ld hl, wcd6d
 	ld de, wStringBuffer
 	ld bc, NAME_LENGTH
 	call CopyData
 	ld a, [wTradedEnemyMonSpecies]
-	ld [wNamedObjectIndex], a
+	ld [wd11e], a
 	jp GetMonName
 
 Trade_LoadMonPartySpriteGfx:
@@ -218,8 +218,8 @@ Trade_SwapNames:
 Trade_Cleanup:
 	xor a
 	call LoadGBPal
-	ld hl, wStatusFlags5
-	res BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	res 6, [hl] ; turn off instant text printing
 	ret
 
 Trade_ShowPlayerMon:
@@ -309,7 +309,7 @@ Trade_AnimateBallEnteringLinkCable:
 .moveBallInsideLinkCableLoop
 	push bc
 	xor a
-	ld de, Trade_BallInsideLinkCableOAMBlock
+	ld de, Trade_BallInsideLinkCableOAM
 	call WriteOAMBlock
 	ld a, [wLinkCableAnimBulgeToggle]
 	xor $1
@@ -345,11 +345,9 @@ Trade_AnimateBallEnteringLinkCable:
 	ldh [hAutoBGTransferEnabled], a
 	ret
 
-Trade_BallInsideLinkCableOAMBlock:
-	db $7e, 0
-	db $7e, OAM_HFLIP
-	db $7e, OAM_VFLIP
-	db $7e, OAM_HFLIP | OAM_VFLIP
+Trade_BallInsideLinkCableOAM:
+	dbsprite  0, 15,  0,  6, $7e, OAM_HFLIP
+	dbsprite  8, 15,  0,  6, $7e, OAM_HFLIP | OAM_VFLIP
 
 Trade_ShowEnemyMon:
 	ld a, TRADE_BALL_TILT_ANIM
@@ -618,7 +616,7 @@ Trade_AnimCircledMon:
 
 Trade_WriteCircledMonOAM:
 	farcall WriteMonPartySpriteOAMBySpecies
-	call Trade_WriteCircleOAMBlock
+	call Trade_WriteCircleOAM
 
 Trade_AddOffsetsToOAMCoords:
 	ld hl, wShadowOAM
@@ -672,11 +670,11 @@ Trade_AnimMonMoveVertical:
 	jr nz, .loop
 	ret
 
-Trade_WriteCircleOAMBlock:
+Trade_WriteCircleOAM:
 ; Writes the OAM blocks for the circle around the traded mon as it passes
 ; the link cable.
-	ld hl, Trade_CircleOAMBlocks
-	ld c, 4
+	ld hl, Trade_CircleOAMPointers
+	ld c, $4
 	xor a
 .loop
 	push bc
@@ -699,46 +697,38 @@ Trade_WriteCircleOAMBlock:
 	jr nz, .loop
 	ret
 
-MACRO trade_circle_oam_block
-	; oam block pointer, upper-left x coord, upper-left y coord
+MACRO trade_circle_oam
 	dw \1
 	db \2, \3
 ENDM
 
-Trade_CircleOAMBlocks:
-	trade_circle_oam_block .OAMBlock0,  8,  8
-	trade_circle_oam_block .OAMBlock1, 24,  8
-	trade_circle_oam_block .OAMBlock2,  8, 24
-	trade_circle_oam_block .OAMBlock3, 24, 24
+Trade_CircleOAMPointers:
+	; oam pointer, upper-left x coord, upper-left y coord
+	trade_circle_oam Trade_CircleOAM0, $08, $08
+	trade_circle_oam Trade_CircleOAM1, $18, $08
+	trade_circle_oam Trade_CircleOAM2, $08, $18
+	trade_circle_oam Trade_CircleOAM3, $18, $18
 
-.OAMBlock0:
-	db ICON_TRADEBUBBLE << 2 + 0, OAM_OBP1
-	db ICON_TRADEBUBBLE << 2 + 1, OAM_OBP1
-	db ICON_TRADEBUBBLE << 2 + 2, OAM_OBP1
-	db ICON_TRADEBUBBLE << 2 + 3, OAM_OBP1
+Trade_CircleOAM0:
+	dbsprite  2,  7,  0,  0, ICON_TRADEBUBBLE << 2 + 1, OAM_OBP1
+	dbsprite  2,  7,  0,  2, ICON_TRADEBUBBLE << 2 + 3, OAM_OBP1
 
-.OAMBlock1:
-	db ICON_TRADEBUBBLE << 2 + 1, OAM_OBP1 | OAM_HFLIP
-	db ICON_TRADEBUBBLE << 2 + 0, OAM_OBP1 | OAM_HFLIP
-	db ICON_TRADEBUBBLE << 2 + 3, OAM_OBP1 | OAM_HFLIP
-	db ICON_TRADEBUBBLE << 2 + 2, OAM_OBP1 | OAM_HFLIP
+Trade_CircleOAM1:
+	dbsprite  6,  7,  0,  1, ICON_TRADEBUBBLE << 2 + 0, OAM_OBP1 | OAM_HFLIP
+	dbsprite  6,  7,  0,  3, ICON_TRADEBUBBLE << 2 + 2, OAM_OBP1 | OAM_HFLIP
 
-.OAMBlock2:
-	db ICON_TRADEBUBBLE << 2 + 2, OAM_OBP1 | OAM_VFLIP
-	db ICON_TRADEBUBBLE << 2 + 3, OAM_OBP1 | OAM_VFLIP
-	db ICON_TRADEBUBBLE << 2 + 0, OAM_OBP1 | OAM_VFLIP
-	db ICON_TRADEBUBBLE << 2 + 1, OAM_OBP1 | OAM_VFLIP
+Trade_CircleOAM2:
+	dbsprite 10,  7,  0,  2, ICON_TRADEBUBBLE << 2 + 3, OAM_OBP1 | OAM_VFLIP
+	dbsprite 10,  7,  0,  0, ICON_TRADEBUBBLE << 2 + 1, OAM_OBP1 | OAM_VFLIP
 
-.OAMBlock3:
-	db ICON_TRADEBUBBLE << 2 + 3, OAM_OBP1 | OAM_HFLIP | OAM_VFLIP
-	db ICON_TRADEBUBBLE << 2 + 2, OAM_OBP1 | OAM_HFLIP | OAM_VFLIP
-	db ICON_TRADEBUBBLE << 2 + 1, OAM_OBP1 | OAM_HFLIP | OAM_VFLIP
-	db ICON_TRADEBUBBLE << 2 + 0, OAM_OBP1 | OAM_HFLIP | OAM_VFLIP
+Trade_CircleOAM3:
+	dbsprite 14,  7,  0,  3, ICON_TRADEBUBBLE << 2 + 2, OAM_OBP1 | OAM_HFLIP | OAM_VFLIP
+	dbsprite 14,  7,  0,  1, ICON_TRADEBUBBLE << 2 + 0, OAM_OBP1 | OAM_HFLIP | OAM_VFLIP
 
 ; a = species
 Trade_LoadMonSprite:
-	ld [wCurPartySpecies], a
-	ld [wCurSpecies], a
+	ld [wcf91], a
+	ld [wd0b5], a
 	ld [wWholeScreenPaletteMonSpecies], a
 	ld b, SET_PAL_POKEMON_WHOLE_SCREEN
 	ld c, 0

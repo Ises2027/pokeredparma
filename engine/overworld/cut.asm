@@ -32,8 +32,8 @@ UsedCut:
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMonNicks
 	call GetPartyMonName
-	ld hl, wStatusFlags5
-	set BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	set 6, [hl]
 	call GBPalWhiteOutWithDelay3
 	call ClearSprites
 	call RestoreScreenTilesAndReloadTilePatterns
@@ -49,8 +49,8 @@ UsedCut:
 	ld hl, UsedCutText
 	call PrintText
 	call LoadScreenTilesFromBuffer2
-	ld hl, wStatusFlags5
-	res BIT_NO_TEXT_DELAY, [hl]
+	ld hl, wd730
+	res 6, [hl]
 	ld a, $ff
 	ld [wUpdateSpritesEnabled], a
 	call InitCutAnimOAM
@@ -119,15 +119,12 @@ LoadCutGrassAnimationTilePattern:
 WriteCutOrBoulderDustAnimationOAMBlock:
 	call GetCutOrBoulderDustAnimationOffsets
 	ld a, $9
-	ld de, .OAMBlock
+	ld de, CutOrBoulderDustAnimationTilesAndAttributes
 	jp WriteOAMBlock
 
-.OAMBlock:
-; tile ID, attributes
-	db $fc, OAM_OBP1
-	db $fd, OAM_OBP1
-	db $fe, OAM_OBP1
-	db $ff, OAM_OBP1
+CutOrBoulderDustAnimationTilesAndAttributes:
+	dbsprite  2, -1,  0,  4, $fd, OAM_OBP1
+	dbsprite  2, -1,  0,  6, $ff, OAM_OBP1
 
 GetCutOrBoulderDustAnimationOffsets:
 	ld hl, wSpritePlayerStateData1YPixels

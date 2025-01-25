@@ -1,5 +1,5 @@
 TrainerDataPointers:
-	table_width 2
+	table_width 2, TrainerDataPointers
 	dw YoungsterData
 	dw BugCatcherData
 	dw LassData

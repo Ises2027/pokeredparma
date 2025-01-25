@@ -29,7 +29,7 @@ HallOfFamePC:
 	ld c, 128
 	call DelayFrames
 	xor a
-	ld [wUnusedCreditsByte], a ; not read
+	ld [wUnusedCD3D], a ; not read
 	ld [wNumCreditsMonsDisplayed], a
 	jp Credits
 
@@ -59,8 +59,8 @@ DisplayCreditsMon:
 	ld hl, CreditsMons
 	add hl, bc ; go that far in the list of monsters and get the next one
 	ld a, [hl]
-	ld [wCurPartySpecies], a
-	ld [wCurSpecies], a
+	ld [wcf91], a
+	ld [wd0b5], a
 	hlcoord 8, 6
 	call GetMonHeader
 	call LoadFrontSpriteByMonIndex

@@ -69,7 +69,7 @@ SetPal_StatusScreen:
 	ld de, wPalPacket
 	ld bc, $10
 	call CopyData
-	ld a, [wCurPartySpecies]
+	ld a, [wcf91]
 	cp NUM_POKEMON_INDEXES + 1
 	jr c, .pokemon
 	ld a, $1 ; not pokemon
@@ -97,7 +97,7 @@ SetPal_Pokedex:
 	ld de, wPalPacket
 	ld bc, $10
 	call CopyData
-	ld a, [wCurPartySpecies]
+	ld a, [wcf91]
 	call DeterminePaletteIDOutOfBattle
 	ld hl, wPalPacket + 3
 	ld [hl], a
@@ -170,7 +170,7 @@ SetPal_Overworld:
 	ld [wDefaultPaletteCommand], a
 	ret
 .PokemonTowerOrAgatha
-	ld a, PAL_GRAYMON - 1
+	ld a, PAL_GREYMON - 1
 	jr .town
 .caveOrBruno
 	ld a, PAL_CAVE - 1
@@ -271,17 +271,17 @@ BadgeBlkDataLengths:
 
 DeterminePaletteID:
 	bit TRANSFORMED, a ; a is battle status 3
-	ld a, PAL_GRAYMON  ; if the mon has used Transform, use Ditto's palette
+	ld a, PAL_GREYMON  ; if the mon has used Transform, use Ditto's palette
 	ret nz
 	ld a, [hl]
 DeterminePaletteIDOutOfBattle:
-	ld [wPokedexNum], a
+	ld [wd11e], a
 	and a ; is the mon index 0?
 	jr z, .skipDexNumConversion
 	push bc
 	predef IndexToPokedex
 	pop bc
-	ld a, [wPokedexNum]
+	ld a, [wd11e]
 .skipDexNumConversion
 	ld e, a
 	ld d, 0

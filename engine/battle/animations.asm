@@ -114,13 +114,13 @@ DrawFrameBlock:
 	ld [de], a ; store tile ID
 	inc de
 	ld a, [hli]
-	bit OAM_X_FLIP, a
+	bit 5, a ; is horizontal flip enabled?
 	jr nz, .disableHorizontalFlip
 .enableHorizontalFlip
-	set OAM_X_FLIP, a
+	set 5, a
 	jr .storeFlags2
 .disableHorizontalFlip
-	res OAM_X_FLIP, a
+	res 5, a
 .storeFlags2
 	ld [de], a
 	inc de
@@ -439,7 +439,7 @@ MoveAnimation:
 	call WaitForSoundToFinish
 	xor a
 	ld [wSubAnimSubEntryAddr], a
-	ld [wUnusedMoveAnimByte], a
+	ld [wUnusedD09B], a
 	ld [wSubAnimTransform], a
 	dec a ; NO_MOVE - 1
 	ld [wAnimSoundID], a
@@ -683,7 +683,7 @@ DoSpecialEffectByAnimationId:
 INCLUDE "data/battle_anims/special_effects.asm"
 
 DoBallTossSpecialEffects:
-	ld a, [wCurItem]
+	ld a, [wcf91]
 	cp ULTRA_BALL + 1 ; is it a Master Ball or Ultra Ball?
 	jr nc, .skipFlashingEffect
 .flashingEffect ; do a flashing effect if it's Master Ball or Ultra Ball
@@ -701,7 +701,7 @@ DoBallTossSpecialEffects:
 	ld a, [wIsInBattle]
 	cp 2 ; is it a trainer battle?
 	jr z, .isTrainerBattle
-	ld a, [wPokeBallAnimData]
+	ld a, [wd11e]
 	cp $10 ; is the enemy pokemon the Ghost Marowak?
 	ret nz
 ; if the enemy pokemon is the Ghost Marowak, make it dodge during the last 3 frames
@@ -1125,12 +1125,12 @@ AnimationWaterDropletsEverywhere:
 	ld a, 16
 	ld [wBaseCoordY], a
 	ld a, 0
-	ld [wUnusedWaterDropletsByte], a
+	ld [wUnusedD08A], a
 	call _AnimationWaterDroplets
 	ld a, 24
 	ld [wBaseCoordY], a
 	ld a, 32
-	ld [wUnusedWaterDropletsByte], a
+	ld [wUnusedD08A], a
 	call _AnimationWaterDroplets
 	dec d
 	jr nz, .loop
@@ -1743,7 +1743,8 @@ AnimationMinimizeMon:
 
 MinimizedMonSprite:
 ; 8x5 partial tile graphic
-pusho b.X ; . = 0, X = 1
+pusho
+opt b.X ; . = 0, X = 1
 	db %...XX...
 	db %..XXXX..
 	db %.XXXXXX.
@@ -2030,8 +2031,8 @@ ChangeMonPic:
 	and a
 	jr z, .playerTurn
 	ld a, [wChangeMonPicEnemyTurnSpecies]
-	ld [wCurPartySpecies], a
-	ld [wCurSpecies], a
+	ld [wcf91], a
+	ld [wd0b5], a
 	xor a
 	ld [wSpriteFlipped], a
 	call GetMonHeader
@@ -2043,7 +2044,7 @@ ChangeMonPic:
 	push af
 	ld a, [wChangeMonPicPlayerTurnSpecies]
 	ld [wBattleMonSpecies2], a
-	ld [wCurSpecies], a
+	ld [wd0b5], a
 	call GetMonHeader
 	predef LoadMonBackPic
 	xor a ; TILEMAP_MON_PIC
@@ -2408,7 +2409,7 @@ FallingObjects_UpdateOAMEntry:
 	sub b
 	ld [hli], a ; X
 	inc hl
-	ld a, 1 << OAM_X_FLIP
+	ld a, (1 << OAM_X_FLIP)
 .next2
 	ld [hl], a ; attribute
 	ret
@@ -2598,7 +2599,7 @@ TossBallAnimation:
 
 	ld hl, .PokeBallAnimations
 	; choose which toss animation to use
-	ld a, [wCurItem]
+	ld a, [wcf91]
 	cp POKE_BALL
 	ld b, TOSS_ANIM
 	jr z, .done

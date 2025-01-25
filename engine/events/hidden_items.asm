@@ -14,7 +14,7 @@ HiddenItems:
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld a, [wHiddenObjectFunctionArgument] ; item ID
-	ld [wNamedObjectIndex], a
+	ld [wd11e], a
 	call GetItemName
 	tx_pre_jump FoundHiddenItemText
 
@@ -77,7 +77,7 @@ HiddenCoins:
 	cp 20
 	jr z, .bcd20
 	cp 40
-	jr z, .bcd20 ; should be bcd40
+	jr z, .bcd40
 	jr .bcd100
 .bcd10
 	ld a, $10
@@ -87,7 +87,7 @@ HiddenCoins:
 	ld a, $20
 	ldh [hCoins + 1], a
 	jr .bcdDone
-.bcd40 ; due to a typo, this is never used
+.bcd40
 	ld a, $40
 	ldh [hCoins + 1], a
 	jr .bcdDone

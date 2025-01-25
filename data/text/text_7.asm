@@ -29,7 +29,7 @@ _GotOffBicycleText2::
 _ThrewAwayItemText::
 	text "Threw away"
 	line "@"
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text "."
 	prompt
 
@@ -46,7 +46,7 @@ _TooImportantToTossText::
 	prompt
 
 _AlreadyKnowsText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " knows"
 	line "@"
 	text_ram wStringBuffer
@@ -194,7 +194,7 @@ _NothingToCutText::
 	prompt
 
 _UsedCutText::
-	text_ram wNameBuffer
+	text_ram wcd6d
 	text " hacked"
 	line "away with CUT!"
 	prompt

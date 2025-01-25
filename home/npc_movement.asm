@@ -4,17 +4,17 @@ IsPlayerCharacterBeingControlledByGame::
 	ld a, [wNPCMovementScriptPointerTableNum]
 	and a
 	ret nz
-	ld a, [wMovementFlags]
-	bit BIT_EXITING_DOOR, a
+	ld a, [wd736]
+	bit 1, a ; currently stepping down from door bit
 	ret nz
-	ld a, [wStatusFlags5]
-	and 1 << BIT_SCRIPTED_MOVEMENT_STATE
+	ld a, [wd730]
+	and $80
 	ret
 
 RunNPCMovementScript::
-	ld hl, wMovementFlags
-	bit BIT_STANDING_ON_DOOR, [hl]
-	res BIT_STANDING_ON_DOOR, [hl]
+	ld hl, wd736
+	bit 0, [hl]
+	res 0, [hl]
 	jr nz, .playerStepOutFromDoor
 	ld a, [wNPCMovementScriptPointerTableNum]
 	and a
@@ -54,7 +54,7 @@ DebugPressedOrHeldB:: ; dummy except in _DEBUG
 ; This is used to skip Trainer battles, the
 ; Safari Game step counter, and some NPC scripts.
 IF DEF(_DEBUG)
-	ld a, [wStatusFlags6]
+	ld a, [wd732]
 	bit BIT_DEBUG_MODE, a
 	ret z
 	ldh a, [hJoyHeld]

@@ -58,11 +58,13 @@ GymTrashScript:
 
 	ldh [hGymTrashCanRandNumMask], a
 	push hl
+.tryagain
 	call Random
 	swap a
 	ld b, a
 	ldh a, [hGymTrashCanRandNumMask]
 	and b
+	jr z, .tryagain
 	dec a
 	pop hl
 
@@ -97,7 +99,7 @@ GymTrashScript:
 ; Completed the trash can puzzle.
 	SetEvent EVENT_2ND_LOCK_OPENED
 	ld hl, wCurrentMapScriptFlags
-	set BIT_CUR_MAP_LOADED_2, [hl]
+	set 6, [hl]
 
 	tx_pre_id VermilionGymTrashSuccessText3
 

@@ -342,10 +342,8 @@ CooltrainerMAI:
 	jp AIUseXAttack
 
 CooltrainerFAI:
-	; The intended 25% chance to consider switching will not apply.
-	; Uncomment the line below to fix this.
 	cp 25 percent + 1
-	; ret nc
+	ret nc
 	ld a, 10
 	call AICheckIfHPBelowFraction
 	jp c, AIUseHyperPotion
@@ -386,6 +384,9 @@ KogaAI:
 
 BlaineAI:
 	cp 25 percent + 1
+	ret nc
+	ld a, 10
+	call AICheckIfHPBelowFraction
 	ret nc
 	jp AIUseSuperPotion
 
@@ -549,6 +550,9 @@ AIPrintItemUseAndUpdateHPBar:
 	xor a
 	ld [wHPBarType], a
 	predef UpdateHPBar2
+	push af
+	farcall DrawEnemyHUDAndHPBar
+	pop af
 	jp DecrementAICount
 
 AISwitchIfEnoughMons:
@@ -632,27 +636,30 @@ AICureStatus:
 	ld [hl], a ; clear status in enemy team roster
 	ld [wEnemyMonStatus], a ; clear status of active enemy
 	ld hl, wEnemyBattleStatus3
-	res BADLY_POISONED, [hl]
+	res 0, [hl]
+	push af
+	farcall DrawEnemyHUDAndHPBar
+	pop af
 	ret
 
 AIUseXAccuracy: ; unused
 	call AIPlayRestoringSFX
 	ld hl, wEnemyBattleStatus2
-	set USING_X_ACCURACY, [hl]
+	set 0, [hl]
 	ld a, X_ACCURACY
 	jp AIPrintItemUse
 
 AIUseGuardSpec:
 	call AIPlayRestoringSFX
 	ld hl, wEnemyBattleStatus2
-	set PROTECTED_BY_MIST, [hl]
+	set 1, [hl]
 	ld a, GUARD_SPEC
 	jp AIPrintItemUse
 
 AIUseDireHit: ; unused
 	call AIPlayRestoringSFX
 	ld hl, wEnemyBattleStatus2
-	set GETTING_PUMPED, [hl]
+	set 2, [hl]
 	ld a, DIRE_HIT
 	jp AIPrintItemUse
 
@@ -732,7 +739,7 @@ AIPrintItemUse:
 AIPrintItemUse_:
 ; print "x used [wAIItem] on z!"
 	ld a, [wAIItem]
-	ld [wNamedObjectIndex], a
+	ld [wd11e], a
 	call GetItemName
 	ld hl, AIBattleUseItemText
 	jp PrintText

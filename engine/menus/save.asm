@@ -1,5 +1,6 @@
 LoadSAV:
-; if carry, write "the file data is destroyed"
+;(if carry -> write
+;"the file data is destroyed")
 	call ClearScreen
 	call LoadFontTilePatterns
 	call LoadTextBoxTilePatterns
@@ -12,15 +13,15 @@ LoadSAV:
 	ld a, $2 ; good checksum
 	jr .goodsum
 .badsum
-	ld hl, wStatusFlags5
+	ld hl, wd730
 	push hl
-	set BIT_NO_TEXT_DELAY, [hl]
+	set 6, [hl]
 	ld hl, FileDataDestroyedText
 	call PrintText
 	ld c, 100
 	call DelayFrames
 	pop hl
-	res BIT_NO_TEXT_DELAY, [hl]
+	res 6, [hl]
 	ld a, $1 ; bad checksum
 .goodsum
 	ld [wSaveFileStatus], a
@@ -66,7 +67,7 @@ LoadSAV0:
 	ld bc, wMainDataEnd - wMainDataStart
 	call CopyData
 	ld hl, wCurMapTileset
-	set BIT_NO_PREVIOUS_MAP, [hl]
+	set 7, [hl]
 	ld hl, sSpriteData
 	ld de, wSpriteDataStart
 	ld bc, wSpriteDataEnd - wSpriteDataStart
@@ -160,20 +161,13 @@ SaveSAV:
 	lb bc, 4, 18
 	call ClearScreenArea
 	hlcoord 1, 14
-	ld de, NowSavingString
-	call PlaceString
-	ld c, 120
-	call DelayFrames
 	ld hl, GameSavedText
 	call PrintText
 	ld a, SFX_SAVE
 	call PlaySoundWaitForCurrent
 	call WaitForSoundToFinish
-	ld c, 30
+	ld c, 10
 	jp DelayFrames
-
-NowSavingString:
-	db "Now saving...@"
 
 SaveSAVConfirm:
 	call PrintText
@@ -349,15 +343,15 @@ ChangeBox::
 	and a
 	ret nz ; return if No was chosen
 	ld hl, wCurrentBoxNum
-	bit BIT_HAS_CHANGED_BOXES, [hl] ; is it the first time player is changing the box?
+	bit 7, [hl] ; is it the first time player is changing the box?
 	call z, EmptyAllSRAMBoxes ; if so, empty all boxes in SRAM
 	call DisplayChangeBoxMenu
 	call UpdateSprites
 	ld hl, hUILayoutFlags
-	set BIT_DOUBLE_SPACED_MENU, [hl]
+	set 1, [hl]
 	call HandleMenuInput
 	ld hl, hUILayoutFlags
-	res BIT_DOUBLE_SPACED_MENU, [hl]
+	res 1, [hl]
 	bit BIT_B_BUTTON, a
 	ret nz
 	call GetBoxSRAMLocation
@@ -366,7 +360,7 @@ ChangeBox::
 	ld hl, wBoxDataStart
 	call CopyBoxToOrFromSRAM ; copy old box from WRAM to SRAM
 	ld a, [wCurrentMenuItem]
-	set BIT_HAS_CHANGED_BOXES, a
+	set 7, a
 	ld [wCurrentBoxNum], a
 	call GetBoxSRAMLocation
 	ld de, wBoxDataStart
@@ -448,12 +442,12 @@ DisplayChangeBoxMenu:
 	ld c, 7
 	call TextBoxBorder
 	ld hl, hUILayoutFlags
-	set BIT_SINGLE_SPACED_LINES, [hl]
+	set 2, [hl]
 	ld de, BoxNames
 	hlcoord 13, 1
 	call PlaceString
 	ld hl, hUILayoutFlags
-	res BIT_SINGLE_SPACED_LINES, [hl]
+	res 2, [hl]
 	ld a, [wCurrentBoxNum]
 	and $7f
 	cp 9

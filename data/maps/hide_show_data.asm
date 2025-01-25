@@ -2,7 +2,7 @@
 
 MapHSPointers:
 ; entries correspond to map ids
-	table_width 2
+	table_width 2, MapHSPointers
 	dw PalletTownHS
 	dw ViridianCityHS
 	dw PewterCityHS
@@ -259,7 +259,7 @@ NoHS:
 
 MissableObjects:
 ; entries correspond to HS_* constants (see constants/hide_show_constants)
-	table_width 3
+	table_width 3, MissableObjects
 ; format: map id, object id, HIDE/SHOW
 
 PalletTownHS:

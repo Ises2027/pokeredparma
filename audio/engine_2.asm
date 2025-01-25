@@ -17,9 +17,9 @@ Audio2_UpdateMusic::
 	ld a, [wMuteAudioAndPauseMusic]
 	and a
 	jr z, .applyAffects
-	bit BIT_MUTE_AUDIO, a
+	bit 7, a
 	jr nz, .nextChannel
-	set BIT_MUTE_AUDIO, a
+	set 7, a
 	ld [wMuteAudioAndPauseMusic], a
 	xor a ; disable all channels' output
 	ldh [rNR51], a
@@ -163,8 +163,8 @@ Audio2_PlayNextNote:
 	ld a, c
 	cp CHAN5
 	jr nz, .beginChecks
-	ld a, [wLowHealthAlarm]
-	bit BIT_LOW_HEALTH_ALARM, a
+	ld a, [wLowHealthAlarm] ; low health alarm enabled?
+	bit 7, a
 	ret nz
 .beginChecks
 	; ---
@@ -208,7 +208,7 @@ Audio2_sound_ret:
 .dontDisable
 	jr .afterDisable
 .returnFromCall
-	res BIT_SOUND_CALL, [hl]
+	res 1, [hl]
 	ld d, $0
 	ld a, c
 	add a
@@ -388,8 +388,8 @@ Audio2_toggle_perfect_pitch:
 	ld hl, wChannelFlags1
 	add hl, bc
 	ld a, [hl]
-	xor 1 << BIT_PERFECT_PITCH
-	ld [hl], a
+	xor $1
+	ld [hl], a ; flip bit 0 of wChannelFlags1
 	jp Audio2_sound_ret
 
 Audio2_vibrato:
@@ -842,8 +842,7 @@ Audio2_note_pitch:
 	bit BIT_PERFECT_PITCH, [hl] ; has toggle_perfect_pitch been used?
 	jr z, .skipFrequencyInc
 	inc e                       ; if yes, increment the frequency by 1
-	jr nc, .skipFrequencyInc    ; Likely a mistake, because `inc` does not set flag C.
-	                            ; Fortunately this does not seem to affect any notes that actually occur.
+	jr nc, .skipFrequencyInc
 	inc d
 .skipFrequencyInc
 	ld hl, wChannelFrequencyLowBytes
@@ -978,7 +977,7 @@ Audio2_ResetCryModifiers:
 	cp CHAN5
 	jr nz, .skip
 	ld a, [wLowHealthAlarm]
-	bit BIT_LOW_HEALTH_ALARM, a
+	bit 7, a
 	jr z, .skip
 	xor a
 	ld [wFrequencyModifier], a
@@ -1405,7 +1404,7 @@ Audio2_PlaySound::
 
 .playMusic
 	xor a
-	ld [wUnusedMusicByte], a
+	ld [wUnusedC000], a
 	ld [wDisableChannelOutputWhenSfxEnds], a
 	ld [wMusicTempo + 1], a
 	ld [wMusicWaveInstrument], a
@@ -1646,7 +1645,7 @@ Audio2_PlaySound::
 	ld a, $77
 	ldh [rNR50], a ; full volume
 	xor a
-	ld [wUnusedMusicByte], a
+	ld [wUnusedC000], a
 	ld [wDisableChannelOutputWhenSfxEnds], a
 	ld [wMuteAudioAndPauseMusic], a
 	ld [wMusicTempo + 1], a
