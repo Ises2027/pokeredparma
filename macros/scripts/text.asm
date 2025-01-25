@@ -128,8 +128,8 @@ MACRO sound_dex_page_added
 ENDM
 
 	const TX_SOUND_CRY_NIDORINO ; $14
-MACRO sound_cry_nidorina
-	db TX_SOUND_CRY_NIDORINA
+MACRO sound_cry_nidorino
+	db TX_SOUND_CRY_NIDORINO
 ENDM
 
 	const TX_SOUND_CRY_PIDGEOT ; $15
