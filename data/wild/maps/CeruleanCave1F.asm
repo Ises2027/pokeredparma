@@ -9,7 +9,7 @@ CeruleanCave1FWildMons:
 	db 52, PARASECT
 	db 49, KADABRA
 	db 53, RAICHU
-	db 53, DITTO
+	db 30, HITMONCHAN
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

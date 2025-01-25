@@ -6,8 +6,8 @@ SeafoamIslandsB4FWildMons:
 	db 32, SHELLDER
 	db 32, STARYU
 	db 30, SEEL
-	db 39, SLOWBRO
-	db 39, GOLDUCK
+	db 30, OMANYTE
+	db 30, KABUTO
 	db 31, SEEL
 	db 32, GOLBAT
 	end_grass_wildmons
