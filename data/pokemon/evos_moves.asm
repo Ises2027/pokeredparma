@@ -481,7 +481,7 @@ TentacoolEvosMoves:
 
 GastlyEvosMoves:
 ; Evolutions
-	db EVOLVE_LEVEL, 25, HAUNTER
+	db EVOLVE_LEVEL, 16, HAUNTER
 	db 0
 ; Learnset
 	db 27, HYPNOSIS
@@ -1326,7 +1326,7 @@ VaporeonEvosMoves:
 
 MachopEvosMoves:
 ; Evolutions
-	db EVOLVE_LEVEL, 28, MACHOKE
+	db EVOLVE_LEVEL, 25, MACHOKE
 	db 0
 ; Learnset
 	db 20, LOW_KICK
