@@ -1,18 +1,18 @@
 TitleMons:
 ; mons on the title screen are randomly chosen from here
 	db MEW
-	db STARTER1
-	db STARTER2
-	db STARTER3
-	db WEEDLE
+	db VENUSAUR
+	db CHARIZARD
+	db BLASTOISE
+	db PINSIR
 	db SCYTHER
 	db PIKACHU
 	db CLEFAIRY
 	db RHYDON
-	db ABRA
-	db GASTLY
+	db ALAKAZAM
+	db GENGAR
 	db DITTO
-	db PIDGEOTTO
+	db PIDGEOT
 	db ONIX
-	db PONYTA
-	db MAGIKARP
+	db RAPIDASH
+	db GYARADOS
