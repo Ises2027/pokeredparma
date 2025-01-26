@@ -7,7 +7,7 @@ SafariZoneWestWildMons:
 	db 33, NIDORINO
 	db 33, NIDORINA
 	db 26, DODUO
-	db 31, EEVEE
+	db 25, EEVEE
 	db 26, TAUROS
 	db 28, KANGASKHAN
 	end_grass_wildmons
