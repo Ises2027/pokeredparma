@@ -11,7 +11,8 @@ _PalletTownOakItsUnsafeText::
 	para "You need your own"
 	line "#MON for your"
 	cont "protection."
-	cont "I know!"
+	
+	para "I know!"
 
 	para "Here, come with"
 	line "me!"
