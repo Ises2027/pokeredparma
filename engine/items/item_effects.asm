@@ -468,7 +468,7 @@ ItemUseBall:
 
 	push hl
 
-; If the Pokémon is transformed, the Pokémon is assumed to be a Ditto.
+; Bug: If the Pokémon is transformed, the Pokémon is assumed to be a Ditto.
 ; This is a bug because a wild Pokémon could have used Transform via
 ; Mirror Move even though the only wild Pokémon that knows Transform is Ditto.
 	ld hl, wEnemyBattleStatus3
@@ -725,15 +725,15 @@ ItemUseSurfboard:
 .makePlayerMoveForward
 	ld a, [wPlayerDirection] ; direction the player is going
 	bit PLAYER_DIR_BIT_UP, a
-	ld b, D_UP
+	ld b, PAD_UP
 	jr nz, .storeSimulatedButtonPress
 	bit PLAYER_DIR_BIT_DOWN, a
-	ld b, D_DOWN
+	ld b, PAD_DOWN
 	jr nz, .storeSimulatedButtonPress
 	bit PLAYER_DIR_BIT_LEFT, a
-	ld b, D_LEFT
+	ld b, PAD_LEFT
 	jr nz, .storeSimulatedButtonPress
-	ld b, D_RIGHT
+	ld b, PAD_RIGHT
 .storeSimulatedButtonPress
 	ld a, b
 	ld [wSimulatedJoypadStatesEnd], a
@@ -771,8 +771,8 @@ ItemUseEvoStone:
 	pop bc
 	jr c, .canceledItemUse
 	ld a, b
-	ld [wcf91], a
-	ld a, $01
+	ld [wCurPartySpecies], a
+	ld a, TRUE
 	ld [wForceEvolution], a
 	ld a, SFX_HEAL_AILMENT
 	call PlaySoundWaitForCurrent
@@ -2060,7 +2060,7 @@ ItemUsePPRestore:
 	cp MAX_ETHER
 	jr z, .fullyRestorePP
 	ld a, [hl] ; move PP
-	and %00111111 ; lower 6 bit bits store current PP
+	and PP_MASK
 	cp b ; does current PP equal max PP?
 	ret z ; if so, return
 	add 10 ; increase current PP by 10
@@ -2073,7 +2073,7 @@ ItemUsePPRestore:
 	ld b, a
 .storeNewAmount
 	ld a, [hl] ; move PP
-	and %11000000 ; PP Up counter bits
+	and PP_UP_MASK
 	add b
 	ld [hl], a
 	ret
@@ -2194,7 +2194,7 @@ ItemUseTMHM:
 .chooseMon
 	ld hl, wStringBuffer
 	ld de, wTempMoveNameBuffer
-	ld bc, 14
+	ld bc, ITEM_NAME_LENGTH + 1
 	call CopyData ; save the move name because DisplayPartyMenu will overwrite it
 	ld a, $ff
 	ld [wUpdateSpritesEnabled], a
@@ -2204,7 +2204,7 @@ ItemUseTMHM:
 	push af
 	ld hl, wTempMoveNameBuffer
 	ld de, wStringBuffer
-	ld bc, 14
+	ld bc, ITEM_NAME_LENGTH + 1
 	call CopyData
 	pop af
 	jr nc, .checkIfAbleToLearnMove
@@ -2396,7 +2396,7 @@ RestoreBonusPP:
 	jr nz, .nextMove
 .skipMenuItemIDCheck
 	ld a, [hl]
-	and %11000000 ; have any PP Ups been used?
+	and PP_UP_MASK
 	call nz, AddBonusPP ; if so, add bonus PP
 .nextMove
 	inc hl
@@ -2502,7 +2502,7 @@ GetMaxPP:
 .addPPOffset
 	add hl, bc
 	ld a, [hl] ; a = current PP
-	and %11000000 ; get PP Up count
+	and PP_UP_MASK
 	pop bc
 	or b ; place normal max PP in 6 lower bits of a
 	ld h, d
@@ -2513,7 +2513,7 @@ GetMaxPP:
 	ld [wUsingPPUp], a
 	call AddBonusPP ; add bonus PP from PP Ups
 	ld a, [hl]
-	and %00111111 ; mask out the PP Up count
+	and PP_MASK
 	ld [wMaxPP], a ; store max PP
 	ret
 

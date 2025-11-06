@@ -80,7 +80,7 @@ StatusScreen:
 	ld hl, wd72c
 	set 1, [hl]
 	ld a, $33
-	ldh [rNR50], a ; Reduce the volume
+	ldh [rAUDVOL], a ; Reduce the volume
 	call GBPalWhiteOutWithDelay3
 	call ClearScreen
 	call UpdateSprites
@@ -364,7 +364,7 @@ StatusScreen2:
 	ld bc, wPartyMon1PP - wPartyMon1Moves - 1
 	add hl, bc
 	ld a, [hl]
-	and $3f
+	and PP_MASK
 	ld [wStatusScreenCurrentPP], a
 	ld h, d
 	ld l, e
@@ -427,13 +427,13 @@ StatusScreen2:
 	ld a, $1
 	ldh [hAutoBGTransferEnabled], a
 	call Delay3
-	call WaitForTextScrollButtonPress ; wait for button
+	call WaitForTextScrollButtonPress
 	pop af
 	ldh [hTileAnimations], a
 	ld hl, wd72c
 	res 1, [hl]
 	ld a, $77
-	ldh [rNR50], a
+	ldh [rAUDVOL], a
 	call GBPalWhiteOut
 	jp ClearScreen
 

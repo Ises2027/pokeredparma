@@ -14,7 +14,7 @@ PCMainMenu:
 	ld hl, wFlags_0xcd60
 	set 5, [hl]
 	call HandleMenuInput
-	bit BIT_B_BUTTON, a
+	bit B_PAD_B, a
 	jp nz, LogOff
 	ld a, [wMaxMenuItem]
 	cp 2

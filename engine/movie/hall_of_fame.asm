@@ -7,12 +7,12 @@ AnimateHallOfFame:
 	call LoadTextBoxTilePatterns
 	call DisableLCD
 	ld hl, vBGMap0
-	ld bc, $800
+	ld bc, 2 * TILEMAP_AREA
 	ld a, " "
 	call FillMemory
 	call EnableLCD
 	ld hl, rLCDC
-	set 3, [hl]
+	set B_LCDC_BG_MAP, [hl]
 	xor a
 	ld hl, wHallOfFame
 	ld bc, HOF_TEAM
@@ -88,7 +88,7 @@ AnimateHallOfFame:
 	xor a
 	ldh [hWY], a
 	ld hl, rLCDC
-	res 3, [hl]
+	res B_LCDC_BG_MAP, [hl]
 	ret
 
 HallOfFameText:
@@ -237,7 +237,7 @@ HoFDisplayPlayerStats:
 	call PlaceString
 	hlcoord 4, 10
 	ld de, wPlayerMoney
-	ld c, $a3
+	ld c, 3 | LEADING_ZEROES | MONEY_SIGN
 	call PrintBCDNumber
 	ld hl, DexSeenOwnedText
 	call HoFPrintTextAndDelay

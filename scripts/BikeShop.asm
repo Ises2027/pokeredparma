@@ -40,7 +40,7 @@ BikeShopClerkText:
 	xor a
 	ld [wCurrentMenuItem], a
 	ld [wLastMenuItem], a
-	ld a, A_BUTTON | B_BUTTON
+	ld a, PAD_A | PAD_B
 	ld [wMenuWatchedKeys], a
 	ld a, $1
 	ld [wMaxMenuItem], a
@@ -66,7 +66,7 @@ BikeShopClerkText:
 	ld hl, wd730
 	res 6, [hl]
 	call HandleMenuInput
-	bit BIT_B_BUTTON, a
+	bit B_PAD_B, a
 	jr nz, .cancel
 	ld a, [wCurrentMenuItem]
 	and a

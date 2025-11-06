@@ -1,4 +1,4 @@
-CopyDebugName: ; unused
+CopyDebugName:
 	ld bc, NAME_LENGTH
 	jp CopyData
 
@@ -17,7 +17,9 @@ PrepareTitleScreen::
 	ld [wLetterPrintingDelayFlags], a
 	ld hl, wd732
 	ld [hli], a
+	ASSERT wStatusFlags6 + 1 == wStatusFlags7
 	ld [hli], a
+	ASSERT wStatusFlags7 + 1 == wElite4Flags
 	ld [hl], a
 	ld a, BANK(Music_TitleScreen)
 	ld [wAudioROMBank], a
@@ -246,12 +248,12 @@ DisplayTitleScreen:
 	call LoadGBPal
 	ldh a, [hJoyHeld]
 	ld b, a
-	and D_UP | SELECT | B_BUTTON
-	cp D_UP | SELECT | B_BUTTON
+	and PAD_UP | PAD_SELECT | PAD_B
+	cp PAD_UP | PAD_SELECT | PAD_B
 	jp z, .doClearSaveDialogue
 IF DEF(_DEBUG)
 	ld a, b
-	bit BIT_SELECT, a
+	bit B_PAD_SELECT, a
 	jp nz, DebugMenu
 ENDC
 	jp MainMenu
@@ -348,7 +350,7 @@ DrawPlayerCharacter:
 
 ClearBothBGMaps:
 	ld hl, vBGMap0
-	ld bc, $400 * 2
+	ld bc, 2 * TILEMAP_AREA
 	ld a, " "
 	jp FillMemory
 
