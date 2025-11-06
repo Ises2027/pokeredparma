@@ -56,7 +56,7 @@ JapaneseSpeedOptionsText:
 	next "おそい@"
 
 MoneyText:
-	db "MONEY@"
+	db "ARG.@"
 
 JapaneseMochimonoText:
 	db "もちもの@"
@@ -66,17 +66,17 @@ JapaneseMainMenuText:
 	next "さいしょから@"
 
 BattleMenuText:
-	db   "FIGHT <PK><MN>"
-	next "ITEM  RUN@"
+	db   "ATTAQ <PK><MN>"
+	next "OBJET  FUITE@"
 
 SafariZoneBattleMenuText:
 	db   "BALL×       BAIT"
-	next "THROW ROCK  RUN@"
+	next "THROW ROCK  FUITE@"
 
 SwitchStatsCancelText:
-	db   "SWITCH"
+	db   "ORDRE"
 	next "STATS"
-	next "CANCEL@"
+	next "RETOUR@"
 
 JapaneseAhText:
 	db "アッ！@"

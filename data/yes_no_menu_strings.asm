@@ -18,24 +18,24 @@ TwoOptionMenuStrings:
 	assert_table_length NUM_TWO_OPTION_MENUS
 
 .NoYesMenu:
-	db   "NO"
-	next "YES@"
+	db   "NON"
+	next "OUI@"
 
 .YesNoMenu:
-	db   "YES"
-	next "NO@"
+	db   "OUI"
+	next "NON@"
 
 .NorthWestMenu:
-	db   "NORTH"
-	next "WEST@"
+	db   "NORD"
+	next "OUEST@"
 
 .SouthEastMenu:
-	db   "SOUTH"
-	next "EAST@"
+	db   "SUD"
+	next "EST@"
 
 .NorthEastMenu:
-	db   "NORTH"
-	next "EAST@"
+	db   "NORD"
+	next "EST@"
 
 .TradeCancelMenu:
 	db   "TRADE"

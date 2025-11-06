@@ -280,8 +280,8 @@ _CeladonCityHotelText::
 	done
 
 _BookcaseText::
-	text "Crammed full of"
-	line "#MON books!"
+	text "Des bouquins sur"
+	line "les #MON!"
 	done
 
 _NewBicycleText::
@@ -290,14 +290,14 @@ _NewBicycleText::
 	done
 
 _PushStartText::
-	text "Push START to"
-	line "open the MENU!"
+	text "START et...paf!"
+	line "V'là le MENU!"
 	done
 
 _SaveOptionText::
-	text "The SAVE option is"
-	line "on the MENU"
-	cont "screen."
+	text "L'option SAUVER"
+	line "est sur l'écran"
+	cont "du MENU."
 	done
 
 _StrengthsAndWeaknessesText::
@@ -414,30 +414,31 @@ _BillsHousePokemonListText2::
 	done
 
 _OakLabEmailText::
-	text "There's an e-mail"
-	line "message here!"
+	text "Il y a un e-mail!"
 
 	para "..."
 
-	para "Calling all"
-	line "#MON trainers!"
+	para "Avis à tous les"
+	line "dresseurs de"
+	cont "#MON!"
 
-	para "The elite trainers"
-	line "of #MON LEAGUE"
-	cont "are ready to take"
-	cont "on all comers!"
+	para "Le CONSEIL des 4"
+	line "est prêt à punir"
+	cont "tout concurrent!"
 
-	para "Bring your best"
-	line "#MON and see"
-	cont "how you rate as a"
-	cont "trainer!"
+	para "Présentez vos"
+	line "meilleurs #MON"
+	cont "et découvrez"
+	cont "votre niveau"
+	cont "en tant que"
+	cont "dresseur!"
 
-	para "#MON LEAGUE HQ"
-	line "INDIGO PLATEAU"
+	para "LIGUE #MON"
+	line "PLATEAU INDIGO"
 
-	para "PS: PROF.OAK,"
-	line "please visit us!"
-	cont "..."
+	para "PS: PROF. CHEN,"
+	line "votre visite est"
+	cont "attendue..."
 	done
 
 _GameCornerCoinCaseText::
@@ -858,21 +859,21 @@ _HurtByLeechSeedText::
 	prompt
 
 _EnemyMonFaintedText::
-	text "Enemy @"
+	text "Le @"
 	text_ram wEnemyMonNick
 	text_start
-	line "fainted!"
+	line "ennemi est K.O.!"
 	prompt
 
 _MoneyForWinningText::
-	text "<PLAYER> got ¥@"
+	text "<PLAYER> gagne"
+	line "@"
 	text_bcd wAmountMoneyWon, 3 | LEADING_ZEROES | LEFT_ALIGN
-	text_start
-	line "for winning!"
+	text "¥!"
 	prompt
 
 _TrainerDefeatedText::
-	text "<PLAYER> defeated"
+	text "<PLAYER> a vaincu"
 	line "@"
 	text_ram wTrainerName
 	text "!"
@@ -881,7 +882,7 @@ _TrainerDefeatedText::
 _PlayerMonFaintedText::
 	text_ram wBattleMonNick
 	text_start
-	line "fainted!"
+	line "est K.O.!"
 	prompt
 
 _UseNextMonText::
@@ -922,8 +923,8 @@ _TrainerAboutToUseText::
 
 _TrainerSentOutText::
 	text_ram wTrainerName
-	text " sent"
-	line "out @"
+	text_start
+	line "fait appel à..."
 	text_ram wEnemyMonNick
 	text "!"
 	done
@@ -938,9 +939,9 @@ _CantEscapeText::
 	prompt
 
 _NoRunningText::
-	text "No! There's no"
-	line "running from a"
-	cont "trainer battle!"
+	text "On ne peut s'en-"
+	line "fuir d'un combat"
+	cont "de dresseurs!"
 	prompt
 
 _GotAwayText::
@@ -954,8 +955,8 @@ _ItemsCantBeUsedHereText::
 
 _AlreadyOutText::
 	text_ram wBattleMonNick
-	text " is"
-	line "already out!"
+	text " est"
+	line "déjà au combat!"
 	prompt
 
 _MoveNoPPText::
@@ -1119,8 +1120,9 @@ _ExclamationPoint5Text::
 	done
 
 _AttackMissedText::
-	text "<USER>'s"
-	line "attack missed!"
+	text "L'attaque de"
+	line "<USER>"
+	cont "a échoué!"
 	prompt
 
 _KeptGoingAndCrashedText::
@@ -1140,7 +1142,7 @@ _DoesntAffectMonText::
 	prompt
 
 _CriticalHitText::
-	text "Critical hit!"
+	text "Coup critique!"
 	prompt
 
 _OHKOText::
@@ -1206,7 +1208,7 @@ _HitXTimesText::
 
 _GainedText::
 	text_ram wNameBuffer
-	text " gained"
+	text " gagne"
 	line "@"
 	text_end
 
@@ -1222,13 +1224,13 @@ _BoostedText::
 
 _ExpPointsText::
 	text_decimal wExpAmountGained, 2, 4
-	text " EXP. Points!"
+	text " points d'EXP!"
 	prompt
 
 _GrewLevelText::
 	text_ram wNameBuffer
-	text " grew"
-	line "to level @"
+	text " monte"
+	line "au niveau @"
 	text_decimal wCurEnemyLevel, 1, 3
 	text "!@"
 	text_end
@@ -1256,8 +1258,8 @@ _EnemyAppearedText::
 
 _TrainerWantsToFightText::
 	text_ram wTrainerName
-	text " wants"
-	line "to fight!"
+	text " veut"
+	line "se battre!"
 	prompt
 
 _UnveiledGhostText::
@@ -1272,7 +1274,8 @@ _GhostCantBeIDdText::
 	prompt
 
 _GoText::
-	text "Go! @"
+	text "En avant!"
+	line "@"
 	text_end
 
 _DoItText::
@@ -1440,8 +1443,8 @@ _RareCandyText::
 	text_end
 
 _TurnedOnPC1Text::
-	text "<PLAYER> turned on"
-	line "the PC."
+	text "<PLAYER> allume"
+	line "le PC."
 	prompt
 
 _AccessedBillsPCText::
@@ -1468,33 +1471,34 @@ _AccessedMyPCText::
 	prompt
 
 _TurnedOnPC2Text::
-	text "<PLAYER> turned on"
-	line "the PC."
+	text "<PLAYER> allume"
+	line "le PC."
 	prompt
 
 _WhatDoYouWantText::
-	text "What do you want"
-	line "to do?"
+	text "Exécuter quelle"
+	line "application?"
 	done
 
 _WhatToDepositText::
-	text "What do you want"
-	line "to deposit?"
+	text "Que désirez-vous"
+	line "stocker?"
 	done
 
 _DepositHowManyText::
-	text "How many?"
+	text "Combien?"
 	done
 
 _ItemWasStoredText::
+	text "L'objet"
 	text_ram wNameBuffer
-	text " was"
-	line "stored via PC."
+	text " a"
+	line "été stocké."
 	prompt
 
 _NothingToDepositText::
-	text "You have nothing"
-	line "to deposit."
+	text "Vous n'avez rien"
+	line "à stocker."
 	prompt
 
 _NoRoomToStoreText::
@@ -1503,24 +1507,24 @@ _NoRoomToStoreText::
 	prompt
 
 _WhatToWithdrawText::
-	text "What do you want"
-	line "to withdraw?"
+	text "Que voulez-vous"
+	line "retirer?"
 	done
 
 _WithdrawHowManyText::
-	text "How many?"
+	text "Combien?"
 	done
 
 _WithdrewItemText::
-	text "Withdrew"
+	text "Retrait de:"
 	line "@"
 	text_ram wNameBuffer
 	text "."
 	prompt
 
 _NothingStoredText::
-	text "There is nothing"
-	line "stored."
+	text "Rien n'est"
+	line "stocké."
 	prompt
 
 _CantCarryMoreText::
@@ -1529,12 +1533,12 @@ _CantCarryMoreText::
 	prompt
 
 _WhatToTossText::
-	text "What do you want"
-	line "to toss away?"
+	text "Que désirez-vous"
+	line "jeter?"
 	done
 
 _TossHowManyText::
-	text "How many?"
+	text "Combien?"
 	done
 
 _AccessedHoFPCText::
@@ -1694,81 +1698,90 @@ _LinkCanceledText::
 	done
 
 _OakSpeechText1::
-	text "Hello there!"
-	line "Welcome to the"
-	cont "world of #MON!"
+	text "Bien le bonjour!"
+	line "Bienvenue dans le"
+	cont "monde magique des"
+	cont "#MON!"
 
-	para "My name is OAK!"
-	line "People call me"
-	cont "the #MON PROF!"
+	para "Mon nom est CHEN!"
+	line "Les gens souvent"
+	cont "m'appellent le"
+	cont "PROF POKéMON!"
 	prompt
 
 _OakSpeechText2A::
-	text "This world is"
-	line "inhabited by"
-	cont "creatures called"
-	cont "#MON!@"
+	text "Ce monde est"
+	line "peuplé de"
+	cont "créatures du nom"
+	cont "de #MON!@"
 	text_end
 
 _OakSpeechText2B::
 	text_start
 
-	para "For some people,"
-	line "#MON are"
-	cont "pets. Others use"
-	cont "them for fights."
+	para "Pour certains,"
+	line "les #MON sont"
+	cont "des animaux"
+	cont "domestiques, pour"
+	cont "d'autres, ils"
+	cont "sont un moyen de"
+	cont "combattre."
 
-	para "Myself..."
+	para "Pour ma part..."
 
-	para "I study #MON"
-	line "as a profession."
+	para "L'étude des"
+	line "#MON est"
+	cont "ma profession."
 	prompt
 
 _IntroducePlayerText::
-	text "First, what is"
-	line "your name?"
+	text "Tout d'abord,"
+	line "quel est ton nom?"
 	prompt
 
 _IntroduceRivalText::
-	text "This is my grand-"
-	line "son. He's been"
-	cont "your rival since"
-	cont "you were a baby."
+	text "Voici mon petit-"
+	line "fils. Il est ton"
+	cont "rival depuis sa"
+	cont "toute jeunesse."
 
-	para "...Erm, what is"
-	line "his name again?"
+	para "...Heu..."
+	line "C'est quoi donc"
+	cont "son nom déjà?"
 	prompt
 
 _OakSpeechText3::
 	text "<PLAYER>!"
 
-	para "Your very own"
-	line "#MON legend is"
-	cont "about to unfold!"
+	para "Ta quête des"
+	line "#MON est sur"
+	cont "le point de"
+	cont "commencer!"
 
-	para "A world of dreams"
-	line "and adventures"
-	cont "with #MON"
-	cont "awaits! Let's go!"
+	para "Un tout nouveau"
+	line "monde de rêves,"
+	cont "d'aventures et"
+	cont "de #MON"
+	cont "t'attend! Dingue!"
 	done
 
 _DoYouWantToNicknameText::
-	text "Do you want to"
-	line "give a nickname"
-	cont "to @"
+	text "Voulez-vous"
+	line "donner un surnom"
+	cont "à @"
 	text_ram wNameBuffer
 	text "?"
 	done
 
 _YourNameIsText::
-	text "Right! So your"
-	line "name is <PLAYER>!"
+	text "OK! Ton nom est"
+	line "donc <PLAYER>!"
 	prompt
 
 _HisNameIsText::
-	text "That's right! I"
-	line "remember now! His"
-	cont "name is <RIVAL>!"
+	text "Ah oui! Je me"
+	line "souviens! Son nom"
+	cont "est <RIVAL>!"
 	prompt
 
 _WillBeTradedText::

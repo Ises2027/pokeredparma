@@ -4,19 +4,20 @@ _FileDataDestroyedText::
 	prompt
 
 _WouldYouLikeToSaveText::
-	text "Would you like to"
-	line "SAVE the game?"
+	text "Voulez-vous"
+	line "sauvegarder?"
 	done
 
 _GameSavedText::
-	text "<PLAYER> saved"
-	line "the game!"
+	text "<PLAYER>"
+	line "sauvegarde"
+	cont "la partie!"
 	done
 
 _OlderFileWillBeErasedText::
-	text "The older file"
-	line "will be erased to"
-	cont "save. Okay?"
+	text "L'ancienne"
+	line "sauvegarde sera"
+	cont "effacée. OK?"
 	done
 
 _WhenYouChangeBoxText::
@@ -194,7 +195,7 @@ _MoveWasDisabledText::
 	prompt
 
 _NothingHappenedText::
-	text "Nothing happened!"
+	text "Mais échoue!"
 	prompt
 
 _NoEffectText::
