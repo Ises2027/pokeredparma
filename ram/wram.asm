@@ -1828,11 +1828,7 @@ wDestinationWarpID:: db
 
 	ds 128
 
-<<<<<<< HEAD
 ; number of signs in the current map (up to MAX_BG_EVENTS)
-=======
-; number of signs in the current map (up to 16)
->>>>>>> parent of b0c43cd7 (Increase bag capacity)
 wNumSigns:: db
 
 wSignCoords:: ds MAX_BG_EVENTS * 2 ; Y, X
